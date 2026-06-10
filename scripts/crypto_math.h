@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 #include <vector>
-#include <cstdint> // Подключаем стандартные типы фиксированной ширины
+#include <cstdint> 
 
 // Проверка числа на простоту
 bool isPrime(int64_t n);

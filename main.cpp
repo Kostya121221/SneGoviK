@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ciphers/elgamal.h"
 #include "scripts/crypto_math.h"
+#include "ciphers/des.h"
 #include "scripts/input_output.h"
 #include <cstdlib> 
 
@@ -118,6 +119,11 @@ int main(){
                     break;
                 }
                 case MenuEncOptions::DES:{
+                    std::string keystr;
+                    std::cout << "Введите HEX-ключ (16 символов): ";
+                    std::cin >> keystr;
+                    uint64_t key = hexToInt(keystr);
+                    processedData = desEncrypt(processedData, key);
                     break;  
                 }
                 case MenuEncOptions::Shamir:{
@@ -178,10 +184,11 @@ int main(){
                         break;
                         return 0;
                     }
+                    break;
                 }
             case MenuFunctions::Decrypt: {
                 printMenu();
-                std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
+                std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ РАСШИФРОВКИ\n";
                 std::cout <<"0.Выход\n";
                 std::cout <<"1.Файл\n";
                 std::cout <<"2.Из консоли\n";
@@ -189,7 +196,7 @@ int main(){
                 choiseIn = MenuInputOutput(userChoise);
                 switch (choiseIn){
                     case MenuInputOutput::File: {
-                        std::cout <<"Введите название файла(с расширением), который вы будете преобразовывать\n";
+                        std::cout <<"Введите название файла(с расширением), который вы будете прасшифровывать\n";
                         std::string fileName;
                         std::cin >> fileName;
                         std::ifstream file(fileName, std::ios::binary);
@@ -251,6 +258,11 @@ int main(){
                     break;  
                 }
                 case MenuEncOptions::DES:{
+                    std::string keystr;
+                    std::cout << "Введите HEX-ключ: ";
+                    std::cin >> keystr;
+                    uint64_t key = hexToInt(keystr);
+                    processedData = desDecrypt(processedData, key);
                     break;  
                 }
                 case MenuEncOptions::Shamir:{
@@ -332,6 +344,9 @@ int main(){
                     break;  
                 }
                 case MenuEncOptions::DES:{
+                    uint64_t newkey = generateDesKey();
+                    std::cout << "\nВаш новый ключ (скопируйте его): " << intToHex(newkey) << "\n";
+
                     break;  
                 }
                 case MenuEncOptions::Shamir:{
