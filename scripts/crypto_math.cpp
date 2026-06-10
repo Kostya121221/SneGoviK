@@ -13,26 +13,7 @@ bool isPrime(int64_t n) {
     return true;
 }
 
-int64_t powerFermat(int64_t a, int64_t x, int64_t p) {
-    std::cout << "\n--- Вычисление " << a << "^" << x << " mod " << p << " через теорему Ферма ---\n";
-    
-    if (!isPrime(p)) {
-        return -1;
-    }
-    if (a % p == 0) {
-        return 0;
-    }
-
-    int64_t reducedX = x % (p - 1);
-    
-    int64_t res = 1;
-    a = a % p;
-    for (int64_t i = 0; i < reducedX; i++) {
-        res = (res * a) % p;
-    }
-    return res;
-}
-
+//Возведение в степень
 int64_t powerBinary(int64_t a, int64_t x, int64_t p) {
     std::cout << "\n--- Двоичный алгоритм возведения в степень ---\n";
     int64_t res = 1;
@@ -49,7 +30,7 @@ int64_t powerBinary(int64_t a, int64_t x, int64_t p) {
     }
     return res;
 }
-
+//Алгоритм Евклида
 int64_t extendedGCD(int64_t a, int64_t b, int64_t &u, int64_t &v) {
     std::cout << "\n--- Расширенный алгоритм Евклида для пар (" << a << ", " << b << ") ---\n";
     
@@ -90,4 +71,56 @@ int64_t modInverse(int64_t c, int64_t m) {
 }
 
 
+//тест Миллера-Рябина
+bool isPrimeMillerRabin(int64_t n, int k) {
+    if (n < 2) return false;
+    if (n == 2 || n == 3) return true;
+    if (n % 2 == 0) return false;
 
+    int64_t d = n - 1;
+    int s = 0;
+    while (d % 2 == 0) {
+        d /= 2;
+        s++;
+    }
+
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<int64_t> dist(2, n - 2);
+
+    for (int i = 0; i < k; i++) {
+        int64_t a = dist(gen);
+        int64_t x = powerBinary(a, d, n);
+
+        if (x == 1 || x == n - 1) continue;
+
+        bool composite = true;
+        for (int r = 1; r < s; r++) {
+            x = (static_cast<__int128>(x) * x) % n;
+            if (x == n - 1) {
+                composite = false;
+                break;
+            }
+        }
+        if (composite) return false; 
+    }
+    return true; 
+}
+
+int64_t generateSafePrime(int64_t min_val, int64_t max_val) {
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<int64_t> dist(min_val, max_val);
+
+    while (true) {
+        // Генерируем случайное нечетное число q
+        int64_t q = dist(gen) | 1; 
+        
+        if (isPrimeMillerRabin(q)) {
+            int64_t p = 2 * q + 1;
+            if (p <= max_val && isPrimeMillerRabin(p)) {
+                return p; // p — безопасное простое число
+            }
+        }
+    }
+}

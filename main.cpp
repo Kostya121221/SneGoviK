@@ -4,10 +4,11 @@
 #include "scripts/input_output.h"
 #include <cstdlib> 
 
-enum class MenuEncInputOutput : int32_t {
+enum class MenuFunctions : int32_t {
     Exit = 0,
     Encrypt =1,
-    Decrypt = 2
+    Decrypt = 2,
+    Keys = 3
 };
 enum class MenuEncOptions : int32_t {
     Exit = 0,
@@ -28,7 +29,7 @@ enum class MenuInputOutput : int32_t {
 int main(){
     std::setlocale(LC_ALL, "Russian");
     int userChoise = 0;
-    MenuEncInputOutput choiseEncDec = MenuEncInputOutput(0);
+    MenuFunctions choiseEncDec = MenuFunctions(0);
     MenuInputOutput choiseIn = MenuInputOutput(0);
     MenuInputOutput choiseOut = MenuInputOutput(0);
     std::vector<uint8_t> processedData;
@@ -38,11 +39,12 @@ int main(){
         std::cout <<"0.Выход\n";
         std::cout <<"1.Шифрование\n";
         std::cout <<"2.Дешифрование\n";
+        std::cout <<"3.Генерация ключей\n";
         std::cin >> userChoise;
-        choiseEncDec = MenuEncInputOutput(userChoise);
+        choiseEncDec = MenuFunctions(userChoise);
         clearScreen();
         switch (choiseEncDec){
-            case MenuEncInputOutput::Encrypt: {
+            case MenuFunctions::Encrypt: {
                 printMenu();
                 std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
                 std::cout <<"0.Выход\n";
@@ -79,6 +81,7 @@ int main(){
                         break;
                     default:
                         std::cerr << "Ошибка: Неверный выбор!\n";
+                        return 0;
                         break;
                     }
 
@@ -99,47 +102,20 @@ int main(){
                 switch (choiseEnc)
                 {
                 case MenuEncOptions::Elgamal:{
-                    clearScreen();
-                    printMenu();
-                    std::cout <<"ВЫБЕРИТЕ ГЕНЕРАЦИЯ КЛЮЧА/ШИФРОВКА СООБЩЕНИЯ \n";
-                    std::cout <<"0.Выход\n";
-                    std::cout <<"1.Ключ\n";
-                    std::cout <<"2.Шифровка\n";
-                    std::cin >> userChoise;
-                    ElgamalChoise choiseEl = ElgamalChoise(userChoise);
                     int64_t p, g, x, y;
-                    switch (choiseEl)
-                    {
-                    case ElgamalChoise::GenerateKey:{
-                        generateElGamalKeys(p, g, x, y);
-                        std::cout <<"p = "<< p <<" g = "<< g <<" x = "<< x <<" y = "<< y<<std::endl;
-                        std::cout <<"Для копирования "<< p <<" "<< g <<" "<< y<<std::endl;
-                        break;
-                    }
-                    case ElgamalChoise::Encrypt:{
-                        std::vector<CipherPair> encryptedData;
-                         std::cout << "Введите p, g, y через пробел ";
+                    std::vector<CipherPair> encryptedData;
+                    std::cout << "Введите p, g, y через пробел ";
     
-                        if (std::cin >> p >> g >> y) {
-                            std::cout << "Вы ввели: " << p << ", " << g << ", " << y << "\n";
-                        } else {
-                        std::cout << "Ошибка ввода! Вы ввели не целые числа.\n";
-                        }
-
-                        encryptedData = encryptBytesElGamal(processedData, p, g, y);
-                        processedData = cipherToBytes(encryptedData);
-                        break;
-                    }
-                    case ElgamalChoise::Exit:
-                        std::cout << "Работа программы завершена.\n";
+                    if (std::cin >> p >> g >> y) {
+                        std::cout << "Вы ввели: " << p << ", " << g << ", " << y << "\n";
+                    } else {
+                    std::cerr << "Ошибка ввода! Вы ввели не целые числа.\n";
                         return 0;
-                        break;
-                    default:
-                        break;
                     }
-                    
-                    
-                    break;  
+
+                    encryptedData = encryptBytesElGamal(processedData, p, g, y);
+                    processedData = cipherToBytes(encryptedData);
+                    break;
                 }
                 case MenuEncOptions::DES:{
                     break;  
@@ -162,6 +138,7 @@ int main(){
                         break;
                 default:
                         std::cerr << "Ошибка: Неверный выбор!\n";
+                        return 0;
                         break;
                     }
 
@@ -197,11 +174,12 @@ int main(){
                         return 0;
                         break;
                     default:
-                        std::cout << "Ошибка: Неверный выбор!\n";
+                        std::cerr << "Ошибка: Неверный выбор!\n";
                         break;
+                        return 0;
                     }
                 }
-            case MenuEncInputOutput::Decrypt: {
+            case MenuFunctions::Decrypt: {
                 printMenu();
                 std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
                 std::cout <<"0.Выход\n";
@@ -238,6 +216,7 @@ int main(){
                         break;
                     default:
                         std::cerr << "Ошибка: Неверный выбор!\n";
+                        return 0;
                         break;
                     }
                 clearScreen();
@@ -292,16 +271,14 @@ int main(){
                         break;
                 default:
                         std::cerr << "Ошибка: Неверный выбор!\n";
+                        return 0;
                         break;
-                    }
-
-
-
-
+                }
                 clearScreen();
                 printMenu();
 
-                std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА РСАШИФРОВАННЫХ ДАННЫХ \n";
+
+                std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА РАСШИФРОВАННЫХ ДАННЫХ \n";
                 std::cout <<"0.Выход\n";
                 std::cout <<"1.В файл\n";
                 std::cout <<"2.В консоль\n";
@@ -328,23 +305,72 @@ int main(){
                         return 0;
                         break;
                     default:
-                        std::cout << "Ошибка: Неверный выбор!\n";
+                        std::cerr << "Ошибка: Неверный выбор!\n";
+                        break;
+                        return 0;
+                }
+                break;}
+            case MenuFunctions::Keys:{
+                std::cout <<"ВЫБЕРИТЕ ШИФР ДЛЯ КОТОРОГО НУЖНЫ КЛЮЧИ \n";
+                std::cout <<"0.Выход\n";
+                std::cout <<"1.Эль-Гамаль\n";
+                std::cout <<"2.DES\n";
+                std::cout <<"3.Шамир\n";
+                std::cout <<"4.RSA\n";
+                std::cout <<"5.RC4\n";
+                std::cout <<"6.RC5\n";
+                std::cin >> userChoise;
+                MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
+
+                switch (choiseEnc)
+                {
+                case MenuEncOptions::Elgamal:{
+                    int64_t p, g, x, y;
+                    generateElGamalKeys(p, g, x, y);
+                    std::cout <<"p = "<< p <<" g = "<< g <<" x = "<< x <<" y = "<< y<<std::endl;
+                    std::cout <<"Для копирования "<< p <<" "<< g <<" "<< y<<std::endl;
+                    break;  
+                }
+                case MenuEncOptions::DES:{
+                    break;  
+                }
+                case MenuEncOptions::Shamir:{
+                    break;  
+                }
+                case MenuEncOptions::RSA:{
+                    break;  
+                }
+                case MenuEncOptions::RC4:{
+                    break;  
+                }
+                case MenuEncOptions::RC5:{
+                    break;  
+                }
+                case MenuEncOptions::Exit:
+                        std::cout << "Работа программы завершена.\n";
+                        return 0;
+                        break;
+                default:
+                        std::cerr << "Ошибка: Неверный выбор!\n";
+                        return 0;
                         break;
                     }
+                break;
                 
-
-                break;}
-            case MenuEncInputOutput::Exit:
+                    
+            }
+            case MenuFunctions::Exit:
                     std::cout << "Работа программы завершена.\n";
                     return 0;
                     break;
                 default:
                     std::cerr << "Ошибка: Неверный выбор!\n";
+                    return 0;
                     break;
                 
         }
 
-    }while (choiseEncDec != MenuEncInputOutput::Exit);
+    }while (choiseEncDec != MenuFunctions::Exit);
 
 
     /*
