@@ -1,7 +1,6 @@
 #include <iostream>
-#include "input_output.h"
-#include "ciphers/aes.h"
-
+#include "scripts/crypto_math.h"
+#include "scripts/input_output.h"
 int main(){
     std::string fileName;
     std::cout << "введите название файла(с расширением), которое вы будете преобразовывать" << std::endl;
