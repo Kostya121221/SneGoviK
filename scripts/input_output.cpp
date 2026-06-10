@@ -1,4 +1,8 @@
 #include "input_output.h"
+#include <iostream>
+#include <cstdlib> 
+#include <thread>
+#include <chrono>
 
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
@@ -57,7 +61,7 @@ std::vector<uint8_t> readConsoleToBytes() {
 // Она нужна, чтобы сделать всё через строчный поток,
 // потому что это легче и практичнее. Так бы пришлось все числа сначала поочерёдно форматировать, потом в строку
 // А тут уже встроенные инструменты превращающие всё в поток 
-std::string dataToHex(const std::vector<uint32_t>& data){
+std::string dataToHex(const std::vector<uint8_t>& data){
     std::stringstream ss;
     for (uint8_t byte : data) {
         //если коротко - Все числа переведи в 16-тиричные -> каждому элементу выделено 2 символа под вывод ->пустота заполняется нулями
@@ -66,6 +70,33 @@ std::string dataToHex(const std::vector<uint32_t>& data){
     //Строчный поток вернётся в виде строки
     return ss.str();
 };
+std::vector<uint8_t>hexToData() {
+    std::string input;
+    std::cout << "Введите HEX-строку (байты через пробел): ";
+    std::getline(std::cin, input);
+
+    std::vector<uint8_t> data;
+    std::stringstream ss(input);
+    std::string byteStr;
+
+    while (ss >> byteStr) {
+        // для проверки количества введённых байт
+        unsigned int byteVal;
+        std::stringstream ss;
+        
+        // Передаем строку и сразу настраиваем на HEX-формат
+        ss << std::hex << byteStr;
+        
+        // Проверяем, прошла ли конвертация успешно
+        if (ss >> byteVal) {
+            data.push_back(static_cast<uint8_t>(byteVal));
+        } else {
+            std::cerr << "Ошибка: некорректный байт '" << byteStr << "'" << std::endl;
+        }
+    }
+    return data;
+}
+
 
 
 // функция создаёт абсолютно любой бинарный файл, и возвращает true если всё получилось
@@ -80,3 +111,19 @@ bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filen
     return outFile.good(); 
 
 };
+void clearScreen() {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    #if defined(_WIN32) || defined(_WIN64)
+        std::system("cls");
+    #elif defined(__linux__) || defined(__APPLE__)
+        std::system("clear");
+    #endif
+    
+}
+
+void printMenu() {
+    std::cout << "\n=========================================================\n";
+    std::cout << "               МЕНЮ ШИФРАТОРА 'SNEGOVIK'\n";
+    std::cout << "=========================================================\n";
+}
+
