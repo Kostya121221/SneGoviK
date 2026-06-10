@@ -1,5 +1,5 @@
 #pragma once
-
+#include <random>
 #include <vector>
 #include <cstdint> // Подключаем стандартные типы фиксированной ширины
 
@@ -17,4 +17,9 @@ int64_t extendedGCD(int64_t a, int64_t b, int64_t &u, int64_t &v);
 
 //Поиск взаимообратного числа c^-1 mod m
 int64_t modInverse(int64_t c, int64_t m);
+
+//тест Миллера-Рябина
+bool isPrimeMillerRabin(int64_t n, int k = 20);
+//Генерация простых чисел
+int64_t generateSafePrime(int64_t min_val, int64_t max_val);
 

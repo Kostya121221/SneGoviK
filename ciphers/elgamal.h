@@ -12,7 +12,8 @@ struct CipherPair {
     int64_t a;
     int64_t b;
 };
-
+// Поиск первообразного корня g 
+int64_t findPrimitiveRoot(int64_t p);
 // Генерация параметров ключей получателя
 void generateElGamalKeys(int64_t &p, int64_t &g, int64_t &x, int64_t &y);
 
