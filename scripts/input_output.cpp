@@ -97,6 +97,21 @@ std::vector<uint8_t>hexToData() {
     return data;
 }
 
+std::string intToHex(uint64_t value) {
+    std::stringstream ss;
+    ss << std::hex << std::setw(16) << std::setfill('0') << value;
+    return ss.str();
+}
+
+uint64_t hexToInt(const std::string& hex_str) {
+    uint64_t value;
+    std::stringstream ss;
+    ss << std::hex << hex_str;
+    if (!(ss >> value)) {
+        return 0;
+    }
+    return value;
+}
 
 
 // функция создаёт абсолютно любой бинарный файл, и возвращает true если всё получилось
