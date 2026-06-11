@@ -35,22 +35,16 @@ int main(){
     MenuInputOutput choiseOut = MenuInputOutput(0);
     std::vector<uint8_t> processedData;
     do  {
-        printMenu();
-        std::cout <<"ВЫБЕРИТЕ ШИФРОВКА/ДЕШИФРОВКА\n";
-        std::cout <<"0.Выход\n";
-        std::cout <<"1.Шифрование\n";
-        std::cout <<"2.Дешифрование\n";
-        std::cout <<"3.Генерация ключей\n";
+        printMenu(1);
+        printMenu(2);
         std::cin >> userChoise;
         choiseEncDec = MenuFunctions(userChoise);
-        clearScreen();
+        printMenu(0);
         switch (choiseEncDec){
             case MenuFunctions::Encrypt: {
-                printMenu();
+                printMenu(1);
                 std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Файл\n";
-                std::cout <<"2.Из консоли\n";
+                printMenu(3);
                 std::cin >> userChoise;
                 choiseIn = MenuInputOutput(userChoise);
                 switch (choiseIn){
@@ -86,17 +80,10 @@ int main(){
                         break;
                     }
 
-                clearScreen();
-                printMenu();
-
-                std::cout <<"ВЫБЕРИТЕ МЕТОД ШИФРОВАНИЯ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
+                printMenu(0);
+                printMenu(1);
+                
+                printMenu(4);
                 std::cin >> userChoise;
                 MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
 
@@ -149,14 +136,12 @@ int main(){
                     }
 
 
-                clearScreen();
-                printMenu();
+                printMenu(0);
+                printMenu(1);
 
 
                 std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА ЗАШИФРОВАННЫХ ДАННЫХ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.В файл\n";
-                std::cout <<"2.В консоль\n";
+                printMenu(3);
                 std::cin >> userChoise;
                 MenuInputOutput choiseOut = MenuInputOutput(userChoise);
 
@@ -187,11 +172,9 @@ int main(){
                     break;
                 }
             case MenuFunctions::Decrypt: {
-                printMenu();
+                printMenu(1);
                 std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ РАСШИФРОВКИ\n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Файл\n";
-                std::cout <<"2.Из консоли\n";
+                printMenu(3);
                 std::cin >> userChoise;
                 choiseIn = MenuInputOutput(userChoise);
                 switch (choiseIn){
@@ -226,16 +209,9 @@ int main(){
                         return 0;
                         break;
                     }
-                clearScreen();
-                printMenu();
-                std::cout <<"ВЫБЕРИТЕ МЕТОД ШИФРОВАНИЯ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
+                printMenu(0);
+                printMenu(1);
+                printMenu(4);
                 std::cin >> userChoise;
                 MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
 
@@ -286,14 +262,12 @@ int main(){
                         return 0;
                         break;
                 }
-                clearScreen();
-                printMenu();
+                printMenu(0);
+                printMenu(1);
 
 
                 std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА РАСШИФРОВАННЫХ ДАННЫХ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.В файл\n";
-                std::cout <<"2.В консоль\n";
+                printMenu(3);
                 std::cin >> userChoise;
                 MenuInputOutput choiseOut = MenuInputOutput(userChoise);
 
@@ -323,14 +297,7 @@ int main(){
                 }
                 break;}
             case MenuFunctions::Keys:{
-                std::cout <<"ВЫБЕРИТЕ ШИФР ДЛЯ КОТОРОГО НУЖНЫ КЛЮЧИ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
+                printMenu(4);
                 std::cin >> userChoise;
                 MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
 
@@ -370,6 +337,7 @@ int main(){
                         return 0;
                         break;
                     }
+                
                 break;
                 
                     

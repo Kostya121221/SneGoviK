@@ -7,14 +7,12 @@
 #include <vector>
 #include <cstdint>
 #include <string>
-
 enum class PrintOptions {
     Clear,
     Main,
     EncDec,
     InOut,
     EncChoise,
-
 };
 const std::vector<std::string> allowed_passwords = {
         "SGK"
@@ -32,6 +30,7 @@ uint64_t hexToInt(const std::string& hex_str);
 //прочитать консоль
 std::vector<uint8_t> readConsoleToBytes();
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
-void clearScreen();
-void printMenu();
+
+
 void printMenu(int choi);
+

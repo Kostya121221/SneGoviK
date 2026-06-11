@@ -32,7 +32,7 @@ bool loginFunc(){
     auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), password);
     return it != allowed_passwords.end();
 }
->>>>>>> maksim
+
 
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
@@ -157,21 +157,7 @@ bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filen
 
 };
 
-void clearScreen() {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    #if defined(_WIN32) || defined(_WIN64)
-        std::system("cls");
-    #elif defined(__linux__) || defined(__APPLE__)
-        std::system("clear");
-    #endif
-    
-}
 
-void printMenu() {
-    std::cout << "\n=========================================================\n";
-    std::cout << "               МЕНЮ ШИФРАТОРА 'SNEGOVIK'\n";
-    std::cout << "=========================================================\n";
-}
 
 void printMenu(int choi) {
     PrintOptions choise = PrintOptions(choi);
