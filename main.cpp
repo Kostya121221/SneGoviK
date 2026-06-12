@@ -75,7 +75,8 @@ int main() {
         switch (choiseEncDec) {
             case MenuFunctions::Encrypt: {
                 printMenu(1);
-                std::cout << "ВЫБЕРИТЕ ТИП ВВОДО ДАННЫХ ДЛЯ ШИФРОВКИ\n";
+
+                std::cout << "ВЫБЕРИТЕ ТИП ВВОДA ДАННЫХ ДЛЯ ШИФРОВКИ\n";
                 printMenu(3);
                 
                 MenuInputOutput choiseIn = static_cast<MenuInputOutput>(readNumber<int32_t>("Ваш выбор: "));
