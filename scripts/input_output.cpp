@@ -212,26 +212,31 @@ void printMenu(int choi) {
 
 }
 std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
-    // Если строка нечетной длины, она заведомо не является корректным HEX-кодом
-    if (hexString.length() % 2 != 0) {
-        throw std::invalid_argument("Нечетная длина HEX-строки");
+    std::string cleanHex;
+    cleanHex.reserve(hexString.length());
+
+    // оставляем только валидные HEX-символы
+    for (char ch : hexString) {
+        if (std::isxdigit(static_cast<unsigned char>(ch))) {
+            cleanHex.push_back(ch);
+        }
+    }
+
+    // Если после чистки строка пустая или нечетная — это уже явная ошибка ввода
+    if (cleanHex.empty()) {
+        throw std::invalid_argument("Пустой HEX-ввод.");
+    }
+    if (cleanHex.length() % 2 != 0) {
+        throw std::invalid_argument("Нечетная длина HEX-строки после фильтрации.");
     }
 
     std::vector<uint8_t> bytes;
-    bytes.reserve(hexString.length() / 2); // Сразу выделяем память
+    bytes.reserve(cleanHex.length() / 2);
 
-    for (size_t i = 0; i < hexString.length(); i += 2) {
-        std::string byteString = hexString.substr(i, 2);
-        size_t pos = 0;
+    for (size_t i = 0; i < cleanHex.length(); i += 2) {
+        std::string byteString = cleanHex.substr(i, 2);
         
-        // Переводим в число. std::stoul выбросит исключение, если символы не HEX
-        uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, &pos, 16));
-        
-        // Проверяем, что обработаны оба символа (на случай "1g")
-        if (pos != byteString.length()) {
-            throw std::invalid_argument("Некорректный символ в HEX-строке");
-        }
-        
+        uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, nullptr, 16));
         bytes.push_back(byte);
     }
 
