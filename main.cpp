@@ -60,7 +60,7 @@ int main() {
         std::cout << "Введён неверный пароль\n";
         return 0;
     }
-
+    printMenu(0);
     MenuFunctions choiseEncDec;
     std::vector<uint8_t> processedData;
 
@@ -704,8 +704,6 @@ int main() {
                             std::cout << "-----------------------\n";
                             std::cout << "\n--- РЕЗУЛЬТАТ (ОБЫЧНЫЙ ТЕКСТ) ---\n";
                             
-                            // Защита консоли: выводим как символы только печатные данные, 
-                            // чтобы терминал не ломался от управляющих ASCII кодов, если расшифровали мусором
                             for (uint8_t byte : processedData) {
                                 std::cout << static_cast<char>(byte);
                             }
