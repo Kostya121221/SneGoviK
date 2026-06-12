@@ -6,8 +6,6 @@
 // Проверка числа на простоту
 bool isPrime(int64_t n);
 
-// Модульное возведение в степень (Теорема Ферма)
-int64_t powerFermat(int64_t a, int64_t x, int64_t p);
 
 // Быстрое возведение в степень (Двоичное разложение)
 int64_t powerBinary(int64_t a, int64_t x, int64_t p);
