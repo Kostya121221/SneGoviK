@@ -244,8 +244,6 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
     return bytes;
 }
 
-template int readNumber<int>(const std::string&, int, int);
-template long readNumber<long>(const std::string&, long, long);
 template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
-template int32_t readNumber<int32_t>(const std::string& prompt);
-template int64_t readNumber<int64_t>(const std::string& prompt);
+template int32_t readNumber<int32_t>(const std::string&, int32_t, int32_t);
+template int64_t readNumber<int64_t>(const std::string&, int64_t, int64_t);
