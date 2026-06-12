@@ -14,9 +14,7 @@ enum class PrintOptions {
     InOut,
     EncChoise,
 };
-const std::vector<std::string> allowed_passwords = {
-        "SGK"
-    };
+
 template <typename T>
 T readNumber(const std::string& prompt = "");
 bool loginFunc();
@@ -31,6 +29,6 @@ uint64_t hexToInt(const std::string& hex_str);
 std::vector<uint8_t> readConsoleToBytes();
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
 
-
+std::vector<uint8_t> parseHexToBytes(const std::string& hexString);
 void printMenu(int choi);
 

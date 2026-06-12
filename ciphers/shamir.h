@@ -3,16 +3,7 @@
 #include <vector>
 #include <cstdint>
 
-enum class ShamirChoise{
-    Exit,
-    Sender,
-    Recipient
-};
-enum class ShamirKesyGenerate{
-    Exit,
-    AbsoluteGen,
-    GenerateByP
-};
+
 // Функция 1: Генерирует случайное безопасное простое число p
 int64_t shamirGeneratePrime();
 
