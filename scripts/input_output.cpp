@@ -4,6 +4,36 @@
 #include <thread>
 #include <chrono>
 
+#include <algorithm>
+
+template <typename T>
+T readNumber(const std::string& prompt) {
+    T number;
+    while (true) {
+        if (!prompt.empty()) {
+            std::cout << prompt;
+        }
+        if (std::cin >> number) {
+            // Успешно считали число, очищаем остаток строки (например, если ввели "123 abc")
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return number;
+        } else {
+            // Сюда попадаем, если ввели буквы, спецсимволы или число слишком огромное
+            std::cerr << "[Ошибка] Некорректный ввод. Ожидалось число. Попробуйте еще раз.\n";
+            std::cin.clear(); // Сбрасываем флаг ошибки cin
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Чистим буфер
+        }
+    }
+}
+bool loginFunc(){
+    std::cout << "Введите пароль от данного програмного обеспечения"<< std::endl;
+    std::string password;
+    std::cin >> password;
+    auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), password);
+    return it != allowed_passwords.end();
+}
+>>>>>>> maksim
+
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
     // Мы не можем просто перебрать весь поток, поэтому берём порционно информацию
@@ -126,6 +156,7 @@ bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filen
     return outFile.good(); 
 
 };
+
 void clearScreen() {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     #if defined(_WIN32) || defined(_WIN64)
@@ -142,3 +173,56 @@ void printMenu() {
     std::cout << "=========================================================\n";
 }
 
+void printMenu(int choi) {
+    PrintOptions choise = PrintOptions(choi);
+        switch (choise)
+        {
+        case PrintOptions::Clear:{
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            #if defined(_WIN32) || defined(_WIN64)
+            std::system("cls");
+            #elif defined(__linux__) || defined(__APPLE__)
+                std::system("clear");
+            #endif
+            
+            break;}
+        
+        case PrintOptions::Main:{
+            std::cout << "\n=========================================================\n";
+            std::cout << "               МЕНЮ ШИФРАТОРА 'SNEGOVIK'\n";
+            std::cout << "=========================================================\n";
+            break;
+        }
+        case PrintOptions::EncDec:{
+            std::cout <<"ВЫБЕРИТЕ ШИФРОВКА/ДЕШИФРОВКА\n";
+            std::cout <<"0.Выход\n";
+            std::cout <<"1.Шифрование\n";
+            std::cout <<"2.Дешифрование\n";
+            std::cout <<"3.Генерация ключей\n";
+            break;
+        }
+        case PrintOptions::InOut:{
+                std::cout <<"0.Выход\n";
+                std::cout <<"1.Файл\n";
+                std::cout <<"2.Из консоли\n";
+            break;
+        }
+        case PrintOptions::EncChoise:{
+                std::cout <<"ВЫБЕРИТЕ МЕТОД ШИФРОВАНИЯ \n";
+                std::cout <<"0.Выход\n";
+                std::cout <<"1.Эль-Гамаль\n";
+                std::cout <<"2.DES\n";
+                std::cout <<"3.Шамир\n";
+                std::cout <<"4.RSA\n";
+                std::cout <<"5.RC4\n";
+                std::cout <<"6.RC5\n";
+            break;
+        }
+        default:
+            break;
+        }
+
+}
+
+template int32_t readNumber<int32_t>(const std::string& prompt);
+template int64_t readNumber<int64_t>(const std::string& prompt);
