@@ -7,6 +7,7 @@
 const std::vector<std::string> allowed_passwords = {
         "SGK"
     };
+const int64_t TIME_SLEEP = 1;
 
 template <typename T>
 T readNumber(const std::string& prompt, T min_val, T max_val) {
@@ -166,9 +167,9 @@ void printMenu(int choi) {
         switch (choise)
         {
         case PrintOptions::Clear:{
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(TIME_SLEEP));
             #if defined(_WIN32) || defined(_WIN64)
-            std::system("cls");
+                std::system("cls");
             #elif defined(__linux__) || defined(__APPLE__)
                 std::system("clear");
             #endif
