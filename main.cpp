@@ -114,12 +114,11 @@ int main() {
                         dataLoaded = false;
 
                         if (formatChoice == 1) {
-                            // --- ВАРИАНТ 1: ПРОСТОЙ ТЕКСТ ЧЕРЕЗ ТВОЮ ФУНКЦИЮ ---
                             std::cout << "Введите текст. Для завершения введите 'exit' с новой строки:\n";
                             
                             processedData = readConsoleToBytes();
 
-                            // Убираем последний '\n', который твоя функция добавляет перед проверкой на exit
+                            // Убираем последний '\n'
                             if (!processedData.empty() && processedData.back() == '\n') {
                                 processedData.pop_back();
                             }
@@ -133,10 +132,8 @@ int main() {
                             dataLoaded = true;
                         } 
                         else if (formatChoice == 2) {
-                            // --- ВАРИАНТ 2: HEX ЧЕРЕЗ ТВОЮ ЖЕ ФУНКЦИЮ ---
                             std::cout << "Вставьте HEX-строку. Для завершения введите 'exit' с новой строки:\n";
-                            
-                            // Вызываем твою функцию. Она соберет HEX как обычные символы
+
                             std::vector<uint8_t> hexChars = readConsoleToBytes();
 
                             // Убираем последний '\n' перед exit
@@ -153,7 +150,6 @@ int main() {
                             std::string rawHex(hexChars.begin(), hexChars.end());
 
                             try {
-                                // Декодируем символы в реальные байты для Шамира
                                 processedData = parseHexToBytes(rawHex);
                                 std::cout << "[Успех] HEX успешно распарсен. Считано " << processedData.size() << " байт.\n";
                                 dataLoaded = true;
@@ -243,7 +239,6 @@ int main() {
                         }
 
                         std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ШИФРОВАНИЕ) ---\n";
-                        // ... твой код выбора подэтапа ...
 
                         // p должно быть больше 255, чтобы гарантировать корректное шифрование любого байта
                         int64_t p = readNumber<int64_t>("Введите общее простое число p (p > 255): ", 257, std::numeric_limits<int64_t>::max());
@@ -477,7 +472,6 @@ int main() {
                         break;
                 }
 
-                // Жесткий барьер: если данные не загружены или выбран выход — не пускаем к алгоритмам
                 if (!dataLoaded || choiseIn == MenuInputOutput::Exit || processedData.empty()) {
                     break;
                 }
@@ -845,7 +839,7 @@ int main() {
                     case MenuEncOptions::RC5: {
                         std::cout << "\n--- ГЕНЕРАЦИЯ КЛЮЧА RC5 ---\n";
                         size_t len = readNumber<size_t>("Введите длину ключа в байтах (рекомендуется 16): ");
-                        if (len == 0) len = 16;
+                        if (len <= 0) len = 16;
 
                         std::vector<uint8_t> rc5Key = generateRC5Key(len);
                         std::cout << "\n=== ВАШ НОВЫЙ КЛЮЧ RC5 (HEX) ===\n";
