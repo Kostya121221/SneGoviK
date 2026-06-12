@@ -145,7 +145,11 @@ void printMenu(int choi) {
         switch (choise)
         {
         case PrintOptions::Clear:{
+<<<<<<< HEAD
             std::this_thread::sleep_for(std::chrono::seconds(TIME_SLEEP));
+=======
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+>>>>>>> 808e67d (увелечение отклика программы)
             #if defined(_WIN32) || defined(_WIN64)
                 std::system("cls");
             #elif defined(__linux__) || defined(__APPLE__)
@@ -194,7 +198,11 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
     std::string cleanHex;
     cleanHex.reserve(hexString.length());
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+>>>>>>> ad785d6 (увелечение отклика программы)
     // оставляем только валидные HEX-символы
     for (char ch : hexString) {
         if (std::isxdigit(static_cast<unsigned char>(ch))) {
@@ -222,6 +230,16 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
     return bytes;
 }
 
+<<<<<<< HEAD
 template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
 template int32_t readNumber<int32_t>(const std::string&, int32_t, int32_t);
 template int64_t readNumber<int64_t>(const std::string&, int64_t, int64_t);
+=======
+template int readNumber<int>(const std::string&, int, int);
+template long readNumber<long>(const std::string&, long, long);
+template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
+=======
+template int32_t readNumber<int32_t>(const std::string& prompt);
+template int64_t readNumber<int64_t>(const std::string& prompt);
+>>>>>>> 808e67d (увелечение отклика программы)
+>>>>>>> ad785d6 (увелечение отклика программы)
