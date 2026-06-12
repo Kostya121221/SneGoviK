@@ -4,23 +4,24 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
+const std::vector<std::string> allowed_passwords = {
+        "SGK"
+    };
 
 template <typename T>
-T readNumber(const std::string& prompt) {
-    T number;
+T readNumber(const std::string& prompt, T min_val, T max_val) {
+    T value;
     while (true) {
-        if (!prompt.empty()) {
-            std::cout << prompt;
-        }
-        if (std::cin >> number) {
-            // Успешно считали число, очищаем остаток строки (например, если ввели "123 abc")
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            return number;
+        std::cout << prompt;
+        if (std::cin >> value) {
+            if (value >= min_val && value <= max_val) {
+                return value;
+            }
+            std::cout << "[Ошибка] Число вышло за допустимые пределы! Повторите ввод.\n";
         } else {
-            // Сюда попадаем, если ввели буквы, спецсимволы или число слишком огромное
-            std::cerr << "[Ошибка] Некорректный ввод. Ожидалось число. Попробуйте еще раз.\n";
+            std::cout << "[Ошибка] Некорректный ввод! Ожидалось число.\n";
             std::cin.clear(); // Сбрасываем флаг ошибки cin
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Чистим буфер
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очищаем буфер
         }
     }
 }
@@ -31,6 +32,9 @@ bool loginFunc(){
     auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), password);
     return it != allowed_passwords.end();
 }
+
+
+
 
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
@@ -155,6 +159,8 @@ bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filen
 
 };
 
+
+
 void printMenu(int choi) {
     PrintOptions choise = PrintOptions(choi);
         switch (choise)
@@ -205,6 +211,39 @@ void printMenu(int choi) {
         }
 
 }
+std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
+    std::string cleanHex;
+    cleanHex.reserve(hexString.length());
 
-template int32_t readNumber<int32_t>(const std::string& prompt);
-template int64_t readNumber<int64_t>(const std::string& prompt);
+
+    // оставляем только валидные HEX-символы
+    for (char ch : hexString) {
+        if (std::isxdigit(static_cast<unsigned char>(ch))) {
+            cleanHex.push_back(ch);
+        }
+    }
+
+    // Если после чистки строка пустая или нечетная — это уже явная ошибка ввода
+    if (cleanHex.empty()) {
+        throw std::invalid_argument("Пустой HEX-ввод.");
+    }
+    if (cleanHex.length() % 2 != 0) {
+        throw std::invalid_argument("Нечетная длина HEX-строки после фильтрации.");
+    }
+
+    std::vector<uint8_t> bytes;
+    bytes.reserve(cleanHex.length() / 2);
+
+    for (size_t i = 0; i < cleanHex.length(); i += 2) {
+        std::string byteString = cleanHex.substr(i, 2);
+        
+        uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, nullptr, 16));
+        bytes.push_back(byte);
+    }
+
+    return bytes;
+}
+
+template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
+template int32_t readNumber<int32_t>(const std::string&, int32_t, int32_t);
+template int64_t readNumber<int64_t>(const std::string&, int64_t, int64_t);

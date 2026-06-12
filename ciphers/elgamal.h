@@ -3,11 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-enum class ElgamalChoise {
-    Exit = 0,
-    GenerateKey = 1,
-    Encrypt = 2
-};
+//пары для Эль-Гамаля
 struct CipherPair {
     int64_t a;
     int64_t b;

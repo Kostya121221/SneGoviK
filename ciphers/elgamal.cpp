@@ -52,8 +52,24 @@ std::vector<CipherPair> encryptBytesElGamal(const std::vector<uint8_t> &data, in
     std::vector<CipherPair> result;
     
     if (data.empty()) return result;
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
 
-    int64_t k = 151;
+    // Диапазон для k: [2, p - 2]
+    std::uniform_int_distribution<int64_t> distrib(2, p - 2);
+
+    int64_t k = 0;
+    int64_t dummy_u = 0, dummy_v = 0; // Временные переменные для вызова функции
+
+    // Цикл генерации k с проверкой через extendedGCD
+    while (true) {
+        k = distrib(gen);
+    
+        // Если НОД(k, p - 1) равен 1, значит число подходит
+        if (extendedGCD(k, p - 1, dummy_u, dummy_v) == 1) {
+            break;
+        }
+    }
     int64_t a = powerBinary(g, k, p); 
     int64_t y_k = powerBinary(y, k, p); 
     
