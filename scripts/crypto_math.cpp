@@ -15,7 +15,6 @@ bool isPrime(int64_t n) {
 
 //Возведение в степень
 int64_t powerBinary(int64_t a, int64_t x, int64_t p) {
-    std::cout << "\n--- Двоичный алгоритм возведения в степень ---\n";
     int64_t res = 1;
     a = a % p;
     int64_t step = 1;

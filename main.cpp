@@ -1,412 +1,35 @@
 #include <iostream>
-#include "ciphers/elgamal.h"
-#include "scripts/crypto_math.h"
-#include "ciphers/des.h"
-#include "scripts/input_output.h"
-#include <cstdlib> 
-
-enum class MenuFunctions : int32_t {
-    Exit = 0,
-    Encrypt =1,
-    Decrypt = 2,
-    Keys = 3
-};
-enum class MenuEncOptions : int32_t {
-    Exit = 0,
-    Elgamal =1,
-    DES = 2,
-    Shamir,
-    RSA,
-    RC4,
-    RC5,
-};
-enum class MenuInputOutput : int32_t {
-    Exit = 0,
-    File =1,
-    Console = 2
-};
-
-
-int main(){
-    std::setlocale(LC_ALL, "Russian");
-    int userChoise = 0;
-    MenuFunctions choiseEncDec = MenuFunctions(0);
-    MenuInputOutput choiseIn = MenuInputOutput(0);
-    MenuInputOutput choiseOut = MenuInputOutput(0);
-    std::vector<uint8_t> processedData;
-    do  {
-        printMenu();
-        std::cout <<"ВЫБЕРИТЕ ШИФРОВКА/ДЕШИФРОВКА\n";
-        std::cout <<"0.Выход\n";
-        std::cout <<"1.Шифрование\n";
-        std::cout <<"2.Дешифрование\n";
-        std::cout <<"3.Генерация ключей\n";
-        std::cin >> userChoise;
-        choiseEncDec = MenuFunctions(userChoise);
-        clearScreen();
-        switch (choiseEncDec){
-            case MenuFunctions::Encrypt: {
-                printMenu();
-                std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Файл\n";
-                std::cout <<"2.Из консоли\n";
-                std::cin >> userChoise;
-                choiseIn = MenuInputOutput(userChoise);
-                switch (choiseIn){
-                    case MenuInputOutput::File: {
-                        std::cout <<"Введите название файла(с расширением), который вы будете преобразовывать\n";
-                        std::string fileName;
-                        std::cin >> fileName;
-                        std::ifstream file(fileName, std::ios::binary);
-                        if (file) {
-                        // Прогоняем файл 
-                            processedData = fromStreamToData(file);
-                            std::cout << "[Успех] Данные считаны, обработаны и сохранены в памяти. Размер: " << processedData.size() << " байт.\n";
-                        } else {
-                            std::cerr << "Не удалось открыть файл.\n";
-                            return 1;
-                        }
-                        file.close();
-                        break;
-                    }
-                    case MenuInputOutput::Console: {
-                        std::cout << "Введите exit, чтобы прекратить ввод из консоли" << std::endl;
-                        processedData = readConsoleToBytes();
-                        std::cout << "ввод с консоли прекращён!" << std::endl;
-                        break;
-                    }
-                    case MenuInputOutput::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                    default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        return 0;
-                        break;
-                    }
-
-                clearScreen();
-                printMenu();
-
-                std::cout <<"ВЫБЕРИТЕ МЕТОД ШИФРОВАНИЯ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
-                std::cin >> userChoise;
-                MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
-
-                switch (choiseEnc)
-                {
-                case MenuEncOptions::Elgamal:{
-                    int64_t p, g, x, y;
-                    std::vector<CipherPair> encryptedData;
-                    std::cout << "Введите p, g, y через пробел ";
-    
-                    if (std::cin >> p >> g >> y) {
-                        std::cout << "Вы ввели: " << p << ", " << g << ", " << y << "\n";
-                    } else {
-                    std::cerr << "Ошибка ввода! Вы ввели не целые числа.\n";
-                        return 0;
-                    }
-
-                    encryptedData = encryptBytesElGamal(processedData, p, g, y);
-                    processedData = cipherToBytes(encryptedData);
-                    break;
-                }
-                case MenuEncOptions::DES:{
-                    std::string keystr;
-                    std::cout << "Введите HEX-ключ (16 символов): ";
-                    std::cin >> keystr;
-                    uint64_t key = hexToInt(keystr);
-                    processedData = desEncrypt(processedData, key);
-                    break;  
-                }
-                case MenuEncOptions::Shamir:{
-                    break;  
-                }
-                case MenuEncOptions::RSA:{
-                    break;  
-                }
-                case MenuEncOptions::RC4:{
-                    break;  
-                }
-                case MenuEncOptions::RC5:{
-                    break;  
-                }
-                case MenuEncOptions::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        return 0;
-                        break;
-                    }
-
-
-                clearScreen();
-                printMenu();
-
-
-                std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА ЗАШИФРОВАННЫХ ДАННЫХ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.В файл\n";
-                std::cout <<"2.В консоль\n";
-                std::cin >> userChoise;
-                MenuInputOutput choiseOut = MenuInputOutput(userChoise);
-
-                switch (choiseOut){
-                    case MenuInputOutput::File: {
-                    std::cout <<"Введите название файла(с расширением), который вы будете преобразовывать\n";
-                    std::string resultFileName;
-                    std::cin >> resultFileName;
-                    if (dataToBinaryFile(processedData, resultFileName) ){
-                        std::cout << "Файл: Данные успешно упакованы в " << resultFileName << std::endl;
-                    }
-                    break;
-                    }
-                    case MenuInputOutput::Console: {
-                    std::cout << dataToHex(processedData) << std::endl;;
-                    std::cout << "вывод в консоль прекращён!" << std::endl;
-                    break;
-                    }
-                    case MenuInputOutput::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                    default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        break;
-                        return 0;
-                    }
-                    break;
-                }
-            case MenuFunctions::Decrypt: {
-                printMenu();
-                std::cout <<"ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ РАСШИФРОВКИ\n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Файл\n";
-                std::cout <<"2.Из консоли\n";
-                std::cin >> userChoise;
-                choiseIn = MenuInputOutput(userChoise);
-                switch (choiseIn){
-                    case MenuInputOutput::File: {
-                        std::cout <<"Введите название файла(с расширением), который вы будете прасшифровывать\n";
-                        std::string fileName;
-                        std::cin >> fileName;
-                        std::ifstream file(fileName, std::ios::binary);
-                        if (file) {
-                        // Прогоняем файл 
-                            processedData = fromStreamToData(file);
-                            std::cout << "[Успех] Данные считаны, обработаны и сохранены в памяти. Размер: " << processedData.size() << " байт.\n";
-                        } else {
-                            std::cerr << "Не удалось открыть файл.\n";
-                            return 1;
-                        }
-                        file.close();
-                        break;
-                    }
-                    case MenuInputOutput::Console: {
-                        std::cout << "Введите exit, чтобы прекратить ввод из консоли" << std::endl;
-                        processedData = readConsoleToBytes();
-                        std::cout << "ввод с консоли прекращён!" << std::endl;
-                        break;
-                    }
-                    case MenuInputOutput::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                    default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        return 0;
-                        break;
-                    }
-                clearScreen();
-                printMenu();
-                std::cout <<"ВЫБЕРИТЕ МЕТОД ШИФРОВАНИЯ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
-                std::cin >> userChoise;
-                MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
-
-                switch (choiseEnc)
-                {
-                case MenuEncOptions::Elgamal:{
-                    std::cout << "Введите поочердно значения ваши значения p x: ";
-                    int64_t p, g, x, y;
-                    
-    
-                    // std::cin автоматически пропускает пробелы и переносы строк
-                    if (std::cin >> p >> x) {
-                        std::cout << "Вы ввели: " << p << ", " << x << "\n";
-                    } else {
-                        std::cout << "Ошибка ввода! Вы ввели не целые числа.\n";
-                    }
-                    
-                    std::vector<CipherPair> dencryptedData;
-                    processedData = decryptBytesElGamal(bytesToCipher(processedData), p, x);
-                    break;  
-                }
-                case MenuEncOptions::DES:{
-                    std::string keystr;
-                    std::cout << "Введите HEX-ключ: ";
-                    std::cin >> keystr;
-                    uint64_t key = hexToInt(keystr);
-                    processedData = desDecrypt(processedData, key);
-                    break;  
-                }
-                case MenuEncOptions::Shamir:{
-                    break;  
-                }
-                case MenuEncOptions::RSA:{
-                    break;  
-                }
-                case MenuEncOptions::RC4:{
-                    break;  
-                }
-                case MenuEncOptions::RC5:{
-                    break;  
-                }
-                case MenuEncOptions::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        return 0;
-                        break;
-                }
-                clearScreen();
-                printMenu();
-
-
-                std::cout <<"ВЫБЕРИТЕ ТИП ВЫВОДА РАСШИФРОВАННЫХ ДАННЫХ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.В файл\n";
-                std::cout <<"2.В консоль\n";
-                std::cin >> userChoise;
-                MenuInputOutput choiseOut = MenuInputOutput(userChoise);
-
-                switch (choiseOut){
-                    case MenuInputOutput::File: {
-                    std::cout <<"Введите название файла(с расширением), который вы будете преобразовывать\n";
-                    std::string resultFileName;
-                    std::cin >> resultFileName;
-                    if (dataToBinaryFile(processedData, resultFileName) ){
-                        std::cout << "Файл: Данные успешно упакованы в " << resultFileName << std::endl;
-                    }
-                    break;
-                    }
-                    case MenuInputOutput::Console: {
-                    std::cout << dataToHex(processedData) << std::endl;;
-                    std::cout << "вывод в консоль прекращён!" << std::endl;
-                    break;
-                    }
-                    case MenuInputOutput::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                    default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        break;
-                        return 0;
-                }
-                break;}
-            case MenuFunctions::Keys:{
-                std::cout <<"ВЫБЕРИТЕ ШИФР ДЛЯ КОТОРОГО НУЖНЫ КЛЮЧИ \n";
-                std::cout <<"0.Выход\n";
-                std::cout <<"1.Эль-Гамаль\n";
-                std::cout <<"2.DES\n";
-                std::cout <<"3.Шамир\n";
-                std::cout <<"4.RSA\n";
-                std::cout <<"5.RC4\n";
-                std::cout <<"6.RC5\n";
-                std::cin >> userChoise;
-                MenuEncOptions choiseEnc = MenuEncOptions(userChoise);
-
-                switch (choiseEnc)
-                {
-                case MenuEncOptions::Elgamal:{
-                    int64_t p, g, x, y;
-                    generateElGamalKeys(p, g, x, y);
-                    std::cout <<"p = "<< p <<" g = "<< g <<" x = "<< x <<" y = "<< y<<std::endl;
-                    std::cout <<"Для копирования "<< p <<" "<< g <<" "<< y<<std::endl;
-                    break;  
-                }
-                case MenuEncOptions::DES:{
-                    uint64_t newkey = generateDesKey();
-                    std::cout << "\nВаш новый ключ (скопируйте его): " << intToHex(newkey) << "\n";
-
-                    break;  
-                }
-                case MenuEncOptions::Shamir:{
-                    break;  
-                }
-                case MenuEncOptions::RSA:{
-                    break;  
-                }
-                case MenuEncOptions::RC4:{
-                    break;  
-                }
-                case MenuEncOptions::RC5:{
-                    break;  
-                }
-                case MenuEncOptions::Exit:
-                        std::cout << "Работа программы завершена.\n";
-                        return 0;
-                        break;
-                default:
-                        std::cerr << "Ошибка: Неверный выбор!\n";
-                        return 0;
-                        break;
-                    }
-                break;
-                
-                    
-            }
-            case MenuFunctions::Exit:
-                    std::cout << "Работа программы завершена.\n";
-                    return 0;
-                    break;
-                default:
-                    std::cerr << "Ошибка: Неверный выбор!\n";
-                    return 0;
-                    break;
-                
-        }
-
-    }while (choiseEncDec != MenuFunctions::Exit);
-
-
-    /*
-    std::string fileName;
-    std::cout << "введите название файла(с расширением), которое вы будете преобразовывать" << std::endl;
-    std::cin >> fileName;
-=======
 #include <fstream>
 #include <vector>
 #include <string>
 #include <cstdlib>
 #include <clocale>
 #include <limits>
+#include <stdexcept>
 
 #include "ciphers/elgamal.h"
 #include "ciphers/shamir.h"
 #include "ciphers/des.h"
-#include "ciphers/rsa.h" // Подключили RSA
+#include "ciphers/rsa.h" 
+#include "ciphers/rc4.h"
+#include "ciphers/rc5.h" 
 #include "scripts/crypto_math.h"
 #include "scripts/input_output.h"
-
+enum class ElgamalChoise {
+    Exit = 0,
+    GenerateKey = 1,
+    Encrypt = 2
+};
+enum class ShamirChoise{
+    Exit,
+    Sender,
+    Recipient
+};
+enum class ShamirKesyGenerate{
+    Exit,
+    AbsoluteGen,
+    GenerateByP
+};
 enum class MenuFunctions : int32_t {
     Exit = 0,
     Encrypt = 1,
@@ -439,7 +62,6 @@ int main() {
     }
 
     MenuFunctions choiseEncDec;
->>>>>>> maksim
     std::vector<uint8_t> processedData;
 
     do {
@@ -453,7 +75,7 @@ int main() {
         switch (choiseEncDec) {
             case MenuFunctions::Encrypt: {
                 printMenu(1);
-                std::cout << "ВЫБЕРИТЕ ТИП ВВОДА ДАННЫХ ДЛЯ ШИФРОВКИ\n";
+                std::cout << "ВЫБЕРИТЕ ТИП ВВОДО ДАННЫХ ДЛЯ ШИФРОВКИ\n";
                 printMenu(3);
                 
                 MenuInputOutput choiseIn = static_cast<MenuInputOutput>(readNumber<int32_t>("Ваш выбор: "));
@@ -478,33 +100,72 @@ int main() {
                     }
                     case MenuInputOutput::Console: {
                         printMenu(0);
-                        std::cout << "Введите данные в консоль. Если это Шаг 2, вставляйте HEX-строку без пробелов.\n";
-                        std::cout << "Для окончания ввода введите 'exit' на новой строке:\n";
-    
-                        std::string rawInput;
-                        std::string line;
-                        while (std::cin >> line && line != "exit") {
-                            rawInput += line;
-                        }
+                        
+                        std::cout << "\n--- ВЫБОР ФОРМАТА ВВОДА ---\n";
+                        std::cout << "1. Обычный текст\n";
+                        std::cout << "2. HEX-строка (для схемы Шамира)\n";
+                        
+                        int32_t formatChoice = readNumber<int32_t>("Выберите формат: ");
+                        
+                        // Чистим буфер перед вызовом getline внутри твоей функции
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        
+                        processedData.clear();
+                        dataLoaded = false;
 
-                        std::cout << "Как интерпретировать ввод? (1 - Обычный текст, 2 - HEX-строка): ";
-                        int32_t inputType = readNumber<int32_t>("");
+                        if (formatChoice == 1) {
+                            // --- ВАРИАНТ 1: ПРОСТОЙ ТЕКСТ ЧЕРЕЗ ТВОЮ ФУНКЦИЮ ---
+                            std::cout << "Введите текст. Для завершения введите 'exit' с новой строки:\n";
+                            
+                            processedData = readConsoleToBytes();
 
-                        if (inputType == 2) {
-                            processedData.clear();
-                            for (size_t i = 0; i < rawInput.length(); i += 2) {
-                                if (i + 1 < rawInput.length()) {
-                                    std::string byteString = rawInput.substr(i, 2);
-                                    uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, nullptr, 16));
-                                    processedData.push_back(byte);
-                                }
+                            // Убираем последний '\n', который твоя функция добавляет перед проверкой на exit
+                            if (!processedData.empty() && processedData.back() == '\n') {
+                                processedData.pop_back();
                             }
-                            std::cout << "[Успех] HEX-строка успешно распарсена в " << processedData.size() << " байт.\n";
-                        } else {
-                            processedData = std::vector<uint8_t>(rawInput.begin(), rawInput.end());
+                            
+                            if (processedData.empty()) {
+                                std::cout << "Ввод пуст. Возврат в меню.\n";
+                                break;
+                            }
+                            
+                            std::cout << "[Успех] Текст успешно считан. Размер: " << processedData.size() << " байт.\n";
+                            dataLoaded = true;
+                        } 
+                        else if (formatChoice == 2) {
+                            // --- ВАРИАНТ 2: HEX ЧЕРЕЗ ТВОЮ ЖЕ ФУНКЦИЮ ---
+                            std::cout << "Вставьте HEX-строку. Для завершения введите 'exit' с новой строки:\n";
+                            
+                            // Вызываем твою функцию. Она соберет HEX как обычные символы
+                            std::vector<uint8_t> hexChars = readConsoleToBytes();
+
+                            // Убираем последний '\n' перед exit
+                            if (!hexChars.empty() && hexChars.back() == '\n') {
+                                hexChars.pop_back();
+                            }
+
+                            if (hexChars.empty()) {
+                                std::cout << "Ввод пуст. Возврат в меню.\n";
+                                break;
+                            }
+
+                            // Переводим вектор байт-символов в строку, чтобы скормить её parseHexToBytes
+                            std::string rawHex(hexChars.begin(), hexChars.end());
+
+                            try {
+                                // Декодируем символы в реальные байты для Шамира
+                                processedData = parseHexToBytes(rawHex);
+                                std::cout << "[Успех] HEX успешно распарсен. Считано " << processedData.size() << " байт.\n";
+                                dataLoaded = true;
+                            } catch (const std::exception& e) {
+                                std::cerr << "[Ошибка] Строка содержит некорректный HEX-код! Возврат в меню.\n";
+                                processedData.clear();
+                            }
+                        } 
+                        else {
+                            std::cout << "[Ошибка] Неверный вариант формата. Возврат в меню.\n";
                         }
-    
-                        dataLoaded = true;
+
                         break;
                     }
                     case MenuInputOutput::Exit:
@@ -515,7 +176,7 @@ int main() {
                         break;
                 }
 
-                if (!dataLoaded) {
+                if (!dataLoaded || choiseIn == MenuInputOutput::Exit) {
                     break; 
                 }
 
@@ -524,6 +185,13 @@ int main() {
                 printMenu(4);
                 
                 MenuEncOptions choiseEnc = static_cast<MenuEncOptions>(readNumber<int32_t>("Выберите алгоритм: "));
+                
+                if (choiseEnc == MenuEncOptions::Exit) {
+                    std::cout << "Возврат в главное меню.\n";
+                    break;
+                }
+
+                bool algoExecuted = true;
 
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
@@ -542,7 +210,7 @@ int main() {
                         std::cin >> keystr;
                         uint64_t key = hexToInt(keystr);
                         processedData = desEncrypt(processedData, key);
-                        break;  
+                        break;   
                     }
                     case MenuEncOptions::Shamir: {
                         std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ШИФРОВАНИЕ) ---\n";
@@ -551,11 +219,18 @@ int main() {
                         std::cout << "2. Шаг 2: Наложение второго шифра (Получатель)\n";
                         
                         int32_t shamirStep = readNumber<int32_t>("Выберите подэтап: ");
+                        if (shamirStep == 0) {
+                            std::cout << "Возврат в главное меню.\n";
+                            algoExecuted = false;
+                            break;
+                        }
+
                         int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
                         int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
 
                         if (modInverse(key, p - 1) == -1) {
                             std::cerr << "[Ошибка] Ключ не является взаимно простым с (p-1)! Операция отменена.\n";
+                            algoExecuted = false;
                             break;
                         }
 
@@ -572,11 +247,13 @@ int main() {
                                     std::cout << "[Успех] Шаг 2 выполнен. Верните файл Отправителю.\n";
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
+                                    algoExecuted = false;
                                 }
                                 break;
                             }
                             default:
                                 std::cerr << "[Ошибка] Неверный подэтап протокола Шамира.\n";
+                                algoExecuted = false;
                                 break;
                         }
                         break;  
@@ -590,31 +267,77 @@ int main() {
                             std::cout << "[Успех] Шифрование RSA успешно завершено.\n";
                         } catch (const std::exception& ex) {
                             std::cerr << "[Ошибка RSA] " << ex.what() << "\n";
+                            algoExecuted = false;
                         }
                         break;
                     }
-                    case MenuEncOptions::RC4:
-                    case MenuEncOptions::RC5:
-                        std::cout << "Данный алгоритм еще не реализован.\n";
+                    case MenuEncOptions::RC4: {
+                        std::cout << "\n--- ШИФРОВАНИЕ RC4 ---\n";
+                        std::string keystr;
+                        std::cout << "Введите HEX-ключ: ";
+                        std::cin >> keystr;
+                        
+                        // ОЧИСТКА БУФЕРА 
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        
+                        try {
+                            std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
+                            if (keyBytes.empty()) {
+                                throw std::invalid_argument("Ключ не может быть пустым.");
+                            }
+                            processedData = rc4Transform(processedData, keyBytes);
+                            std::cout << "[Успех] Шифрование RC4 выполнено.\n";
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка RC4] Некорректный ключ: " << e.what() << "\n";
+                            algoExecuted = false;
+                        }
                         break;
-                    case MenuEncOptions::Exit:
-                        std::cout << "Возврат в главное меню.\n";
+                    }
+                    case MenuEncOptions::RC5: {
+                        std::cout << "\n--- ШИФРОВАНИЕ RC5 ---\n";
+                        std::string keystr;
+                        std::cout << "Введите HEX-ключ: ";
+                        std::cin >> keystr;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        int64_t rounds = readNumber<int64_t>("Введите количество раундов (по умолчанию 12): ");
+                        if (rounds < 0) rounds = 12;
+
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                        try {
+                            std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
+                            if (keyBytes.empty()) {
+                                throw std::invalid_argument("Ключ не может быть пустым.");
+                            }
+                            processedData = rc5Encrypt(processedData, keyBytes, rounds);
+                            std::cout << "[Успех] Шифрование RC5 успешно завершено.\n";
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка RC5] " << e.what() << "\n";
+                            algoExecuted = false;
+                        }
                         break;
+                    }
                     default:
                         std::cerr << "[Ошибка] Неверный выбор алгоритма!\n";
+                        algoExecuted = false;
                         break;
                 }
 
-                if (choiseEnc != MenuEncOptions::Exit && choiseEnc <= MenuEncOptions::RC5) {
+                if (algoExecuted) {
                     printMenu(0);
                     printMenu(1);
                     std::cout << "ВЫБЕРИТЕ ТИП ВЫВОДА ЗАШИФРОВАННЫХ ДАННЫХ \n";
                     printMenu(3);
                     
                     MenuInputOutput choiseOut = static_cast<MenuInputOutput>(readNumber<int32_t>("Ваш выбор: "));
+                    if (choiseOut == MenuInputOutput::Exit) {
+                        std::cout << "Возврат в главное меню (данные не сохранены).\n";
+                        break;
+                    }
+
                     switch (choiseOut) {
                         case MenuInputOutput::File: {
-                            std::cout << "Введите название файла для сохранения результата:\n";
+                            std::cout << "Введите название файла с расширением(желательно .enc) для сохранения результата:\n";
                             std::string resultFileName;
                             std::cin >> resultFileName;
                             if (dataToBinaryFile(processedData, resultFileName)) {
@@ -667,39 +390,64 @@ int main() {
                     }
                     case MenuInputOutput::Console: {
                         printMenu(0);
-                        std::cout << "Вставьте HEX-строку для дешифрования (без пробелов) и введите 'exit' для завершения:\n";
-    
-                        std::string rawHex;
-                        std::string line;
-                        while (std::cin >> line && line != "exit") {
-                            rawHex += line;
-                        }
-
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        
                         processedData.clear();
-                        for (size_t i = 0; i < rawHex.length(); i += 2) {
-                            if (i + 1 < rawHex.length()) {
-                                std::string byteString = rawHex.substr(i, 2);
-                                uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, nullptr, 16));
-                                processedData.push_back(byte);
-                            }
+                        dataLoaded = false;
+
+                        std::cout << "Вставьте HEX-строку для дешифрования.\n";
+                        std::cout << "Для завершения ввода введите 'exit' с новой строки:\n";
+                        
+                        //символы HEX
+                        std::vector<uint8_t> hexChars = readConsoleToBytes();
+
+                        // Убираем последний '\n', который функция добавляет перед 'exit'
+                        if (!hexChars.empty() && hexChars.back() == '\n') {
+                            hexChars.pop_back();
                         }
 
-                        std::cout << "[Успех] Считано " << processedData.size() << " байт из HEX-ввода.\n";
-                        dataLoaded = true;
+                        if (hexChars.empty()) {
+                            std::cout << "Ввод пуст. Возврат в меню.\n";
+                            break;
+                        }
+
+                        // Переводим вектор байт-символов в нормальную строку 
+                        std::string rawHex(hexChars.begin(), hexChars.end());
+
+                        try {
+                            // Конвертируем HEX-символы в реальные байты данных
+                            processedData = parseHexToBytes(rawHex);
+                            std::cout << "[Успех] HEX успешно прочитан. Считано " << processedData.size() << " байт для дешифрования.\n";
+                            dataLoaded = true;
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка] Строка содержит некорректные HEX-символы! Данные не сохранены.\n";
+                            processedData.clear();
+                        }
+
                         break;
                     }
+                    case MenuInputOutput::Exit:
+                        std::cout << "Возврат в главное меню.\n";
+                        break;
                     default:
                         std::cerr << "[Ошибка] Неверный выбор ввода.\n";
                         break;
                 }
 
-                if (!dataLoaded) break;
+                if (!dataLoaded || choiseIn == MenuInputOutput::Exit) break;
 
                 printMenu(0);
                 printMenu(1);
                 printMenu(4);
                 
                 MenuEncOptions choiseEnc = static_cast<MenuEncOptions>(readNumber<int32_t>("Выберите алгоритм: "));
+
+                if (choiseEnc == MenuEncOptions::Exit) {
+                    std::cout << "Возврат в главное меню.\n";
+                    break;
+                }
+
+                bool algoExecuted = true;
 
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
@@ -711,6 +459,7 @@ int main() {
                             std::cout << "[Успех] Дешифрование ElGamal завершено.\n";
                         } catch (const std::exception& e) {
                             std::cerr << "[Ошибка] " << e.what() << "\n";
+                            algoExecuted = false;
                         }
                         break;  
                     }
@@ -720,7 +469,7 @@ int main() {
                         std::cin >> keystr;
                         uint64_t key = hexToInt(keystr);
                         processedData = desDecrypt(processedData, key);
-                        break;  
+                        break;   
                     }
                     case MenuEncOptions::Shamir: {
                         std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ДЕШИФРОВАНИЕ) ---\n";
@@ -729,12 +478,19 @@ int main() {
                         std::cout << "2. Шаг 4: Финальное дешифрование (Получатель)\n";
                         
                         int32_t shamirStep = readNumber<int32_t>("Выберите подэтап: ");
+                        if (shamirStep == 0) {
+                            std::cout << "Возврат в главное меню.\n";
+                            algoExecuted = false;
+                            break;
+                        }
+
                         int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
                         int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
                         
                         int64_t d = modInverse(key, p - 1);
                         if (d == -1) {
                             std::cerr << "[Ошибка] Не удалось рассчитать обратный ключ дешифрования.\n";
+                            algoExecuted = false;
                             break;
                         }
 
@@ -746,6 +502,7 @@ int main() {
                                     std::cout << "[Успех] Шаг 3 выполнен. Отправьте файл Получателю.\n";
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
+                                    algoExecuted = false;
                                 }
                                 break;
                             }
@@ -755,11 +512,13 @@ int main() {
                                     std::cout << "[Успех] Шаг 4 выполнен! Файл восстановлен.\n";
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
+                                    algoExecuted = false;
                                 }
                                 break;
                             }
                             default:
                                 std::cerr << "[Ошибка] Неверный выбор подэтапа.\n";
+                                algoExecuted = false;
                                 break;
                         }
                         break;  
@@ -773,32 +532,82 @@ int main() {
                             std::cout << "[Успех] Дешифрование RSA успешно завершено.\n";
                         } catch (const std::exception& ex) {
                             std::cerr << "[Ошибка RSA] " << ex.what() << "\n";
+                            algoExecuted = false;
                         }
                         break;
                     }
-                    case MenuEncOptions::RC4:
-                    case MenuEncOptions::RC5:
-                        std::cout << "Данный алгоритм еще не реализован.\n";
+                    case MenuEncOptions::RC4: {
+                        std::cout << "\n--- ДЕШИФРОВАНИЕ RC4 ---\n";
+                        std::string keystr;
+                        std::cout << "Введите HEX-ключ: ";
+                        std::cin >> keystr;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        try {
+                            std::vector<uint8_t> keyBytes = parseHexToBytes(keystr); 
+                            if (keyBytes.empty()) {
+                                throw std::invalid_argument("Ключ не может быть пустым.");
+                            }
+                            processedData = rc4Transform(processedData, keyBytes);
+                            std::cout << "[Успех] Расшифрование RC4 выполнено.\n";
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка RC4] Некорректный ключ: " << e.what() << "\n";
+                            algoExecuted = false;
+                        }
                         break;
+                    }
+                    case MenuEncOptions::RC5: {
+                        std::cout << "\n--- ДЕШИФРОВАНИЕ RC5 ---\n";
+                        std::string keystr;
+                        std::cout << "Введите HEX-ключ: ";
+                        std::cin >> keystr;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        uint64_t rounds = readNumber<uint64_t>("Введите количество раундов (по умолчанию 12): ");
+                        if (rounds == 0) rounds = 12;
+
+                        try {
+                            std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
+                            if (keyBytes.empty()) {
+                                throw std::invalid_argument("Ключ не может быть пустым.");
+                            }
+                            
+                            std::vector<uint8_t> decrypted = rc5Decrypt(processedData, keyBytes, rounds);
+                            if (decrypted.empty() && !processedData.empty()) {
+                                throw std::runtime_error("Ошибка дешифрования или неверный паддинг PKCS7.");
+                            }
+                            
+                            processedData = decrypted;
+                            std::cout << "[Успех] Расшифрование RC5 выполнено.\n";
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка RC5] " << e.what() << "\n";
+                            algoExecuted = false;
+                        }
+                        break;
+                    }
                     default:
                         std::cerr << "[Ошибка] Метод дешифрования неверен.\n";
+                        algoExecuted = false;
                         break;
                 }
 
-                if (choiseEnc != MenuEncOptions::Exit && choiseEnc <= MenuEncOptions::RC5) {
+                if (algoExecuted) {
                     printMenu(0);
                     printMenu(1);
                     std::cout << "ВЫБЕРИТЕ ТИП ВЫВОДА РАСШИФРОВАННЫХ ДАННЫХ \n";
                     printMenu(3);
                     
                     MenuInputOutput choiseOut = static_cast<MenuInputOutput>(readNumber<int32_t>("Ваш выбор: "));
+                    if (choiseOut == MenuInputOutput::Exit) {
+                        std::cout << "Возврат в главное меню.\n";
+                        break;
+                    }
+
                     switch (choiseOut) {
                         case MenuInputOutput::File: {
-                            std::cout << "Введите название файла для сохранения результата:\n";
+                            std::cout << "Введите название файла(с нужным расширением) для сохранения результата:\n";
                             std::string resultFileName;
                             std::cin >> resultFileName;
                             if (dataToBinaryFile(processedData, resultFileName)) {
-                                std::cout << "[Успех] Данные успешно сохранены in " << resultFileName << std::endl;
+                                std::cout << "[Успех] Данные успешно сохранены в " << resultFileName << std::endl;
                             }
                             break;
                         }
@@ -824,6 +633,12 @@ int main() {
                 printMenu(4);
                 MenuEncOptions choiseEnc = static_cast<MenuEncOptions>(readNumber<int32_t>("Выберите алгоритм для генерации ключей: "));
                 printMenu(0);
+
+                if (choiseEnc == MenuEncOptions::Exit) {
+                    std::cout << "Возврат в главное меню.\n";
+                    break;
+                }
+
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
                         int64_t p, g, x, y;
@@ -843,6 +658,11 @@ int main() {
                         std::cout << "2. Ручной ввод (сгенерировать ключ под уже готовое число p)\n";
                         
                         int32_t keyGenOption = readNumber<int32_t>("Выберите вариант: ");
+                        if (keyGenOption == 0) {
+                            std::cout << "Возврат в главное меню.\n";
+                            break;
+                        }
+
                         ShamirKesyGenerate keyChoise = static_cast<ShamirKesyGenerate>(keyGenOption);
                         printMenu(0);
                         switch (keyChoise) {
@@ -882,34 +702,27 @@ int main() {
                         std::cout << "2. Ручной ввод (вычислить ключи на основе ваших p и q)\n";
                         
                         int32_t genChoiceInput = readNumber<int32_t>("Выберите вариант: ");
-                        // Кастуем введенное число в наш enum class
-                        RsaKeyGenOptions genChoice = static_cast<RsaKeyGenOptions>(genChoiceInput);
-                        
-                        int64_t input_p = 0, input_q = 0;
-
-                        // Если пользователь выбрал выход, сразу тормозим процесс
-                        if (genChoice == RsaKeyGenOptions::Exit) {
+                        if (genChoiceInput == 0) {
                             std::cout << "Возврат в меню.\n";
                             break;
                         }
 
-                        // Свитч кейс строго по перечислению, как требует ТЗ
+                        RsaKeyGenOptions genChoice = static_cast<RsaKeyGenOptions>(genChoiceInput);
+                        int64_t input_p = 0, input_q = 0;
+
                         switch (genChoice) {
                             case RsaKeyGenOptions::Auto:
                                 std::cout << "Генерация параметров системы, подождите...\n";
                                 break;
-
                             case RsaKeyGenOptions::Manual:
                                 input_p = readNumber<int64_t>("Введите простое число p: ");
                                 input_q = readNumber<int64_t>("Введите простое число q: ");
                                 break;
-
                             default:
                                 std::cerr << "[Ошибка] Неверный выбор режима генерации!\n";
                                 break;
                         }
 
-                        // Если выбор был корректным, выполняем генерацию
                         if (genChoice == RsaKeyGenOptions::Auto || genChoice == RsaKeyGenOptions::Manual) {
                             try {
                                 RSAKeys keys = rsaGenerateKeys(genChoice, input_p, input_q);
@@ -922,15 +735,33 @@ int main() {
                                 std::cout << "ОТКРЫТЫЙ КЛЮЧ: e = " << keys.e << ", n = " << keys.n << "\n";
                                 std::cout << "ЗАКРЫТЫЙ КЛЮЧ: d = " << keys.d << ", n = " << keys.n << "\n";
                             } catch (const std::exception& ex) {
-                                std::cerr << "[Ошибка генерации RSA] " << ex.what() << "\n";
+                                std::cerr << "[Ошибка generation RSA] " << ex.what() << "\n";
                             }
                         }
                         break;
                     }
-                    case MenuEncOptions::RC4:
-                    case MenuEncOptions::RC5:
-                        std::cout << "Данный алгоритм еще не реализован.\n";
+                    case MenuEncOptions::RC4: {
+                        std::cout << "\n--- ГЕНЕРАЦИЯ КЛЮЧА RC4 ---\n";
+                        size_t len = readNumber<size_t>("Введите длину ключа в байтах (рекомендуется 16-256): ");
+                        if (len == 0 || len > 256) len = 16;
+
+                        std::vector<uint8_t> rc4Key = generateRC4Key(len);
+                        std::cout << "\n=== ВАШ НОВЫЙ КЛЮЧ RC4 (HEX) ===\n";
+                        std::cout << dataToHex(rc4Key) << "\n";
+                        std::cout << "============================\n";
+                        break;
+                    }
+                    case MenuEncOptions::RC5: {
+                        std::cout << "\n--- ГЕНЕРАЦИЯ КЛЮЧА RC5 ---\n";
+                        size_t len = readNumber<size_t>("Введите длину ключа в байтах (рекомендуется 16): ");
+                        if (len == 0) len = 16;
+
+                        std::vector<uint8_t> rc5Key = generateRC5Key(len);
+                        std::cout << "\n=== ВАШ НОВЫЙ КЛЮЧ RC5 (HEX) ===\n";
+                        std::cout << dataToHex(rc5Key) << "\n";
+                        std::cout << "============================\n";
                         break;  
+                    }
                     default:
                         std::cerr << "[Ошибка] Неверный выбор!\n";
                         break;
@@ -949,12 +780,5 @@ int main() {
 
     } while (choiseEncDec != MenuFunctions::Exit);
 
-
-    std::cout << "введите название файла(с расширением), в который вы преобразуете информацию" << std::endl;
-    std::cin >> resultFileName;
-    if (dataToBinaryFile(processedData, resultFileName) ){
-        std::cout << "Файл: Данные успешно упакованы в " << resultFileName << std::endl;
-    }
-    */
     return 0;
 }

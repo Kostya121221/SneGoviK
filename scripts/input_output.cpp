@@ -3,9 +3,10 @@
 #include <cstdlib> 
 #include <thread>
 #include <chrono>
-
 #include <algorithm>
-
+const std::vector<std::string> allowed_passwords = {
+        "SGK"
+    };
 template <typename T>
 T readNumber(const std::string& prompt) {
     T number;
@@ -32,7 +33,9 @@ bool loginFunc(){
     auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), password);
     return it != allowed_passwords.end();
 }
->>>>>>> maksim
+
+
+
 
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
@@ -157,21 +160,7 @@ bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filen
 
 };
 
-void clearScreen() {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    #if defined(_WIN32) || defined(_WIN64)
-        std::system("cls");
-    #elif defined(__linux__) || defined(__APPLE__)
-        std::system("clear");
-    #endif
-    
-}
 
-void printMenu() {
-    std::cout << "\n=========================================================\n";
-    std::cout << "               МЕНЮ ШИФРАТОРА 'SNEGOVIK'\n";
-    std::cout << "=========================================================\n";
-}
 
 void printMenu(int choi) {
     PrintOptions choise = PrintOptions(choi);
@@ -223,6 +212,34 @@ void printMenu(int choi) {
         }
 
 }
+std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
+    // Если строка нечетной длины, она заведомо не является корректным HEX-кодом
+    if (hexString.length() % 2 != 0) {
+        throw std::invalid_argument("Нечетная длина HEX-строки");
+    }
+
+    std::vector<uint8_t> bytes;
+    bytes.reserve(hexString.length() / 2); // Сразу выделяем память
+
+    for (size_t i = 0; i < hexString.length(); i += 2) {
+        std::string byteString = hexString.substr(i, 2);
+        size_t pos = 0;
+        
+        // Переводим в число. std::stoul выбросит исключение, если символы не HEX
+        uint8_t byte = static_cast<uint8_t>(std::stoul(byteString, &pos, 16));
+        
+        // Проверяем, что обработаны оба символа (на случай "1g")
+        if (pos != byteString.length()) {
+            throw std::invalid_argument("Некорректный символ в HEX-строке");
+        }
+        
+        bytes.push_back(byte);
+    }
+
+    return bytes;
+}
 
 template int32_t readNumber<int32_t>(const std::string& prompt);
 template int64_t readNumber<int64_t>(const std::string& prompt);
+template unsigned int readNumber<unsigned int>(const std::string&);
+template unsigned long readNumber<unsigned long>(const std::string&);
