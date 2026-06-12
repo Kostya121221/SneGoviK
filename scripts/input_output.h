@@ -21,6 +21,7 @@ T readNumber(const std::string& prompt = "",
              T max_val = std::numeric_limits<T>::max());
 bool loginFunc();
 std::vector<uint8_t> parseHexToBytes(const std::string& hexStr);
+//из потокового ввода в вектор
 std::vector<uint8_t> fromStreamToData(std::istream& source);
 //из вектора в строку и наоборот
 std::string dataToHex(const std::vector<uint8_t>& data);
@@ -30,5 +31,7 @@ std::string intToHex(uint64_t value);
 uint64_t hexToInt(const std::string& hex_str);
 //прочитать консоль
 std::vector<uint8_t> readConsoleToBytes();
+//из вектора в файл
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
+//Для меня
 void printMenu(int choi);

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-
+//пары для Эль-Гамаля
 struct CipherPair {
     int64_t a;
     int64_t b;
