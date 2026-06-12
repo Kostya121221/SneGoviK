@@ -1,39 +1,104 @@
-#include <iostream>
-#include <shamir.h>
-// побитовое возведение в степень
-// 3^13 = 3 * 3 ^12 = 3 * 9^6 = 3 * 81^3 = 3 * 81 * 81^2 = 3 * 81 * 6561 
-int mod_Pow(long long base, long long power, long long modul){
-    //чтобы основание не было большим всегда уменьшаем
-    base %= modul;
-    long long result =  1;
-    while(power > 0){
-        if (power % 2 == 1){
-            result = (result * base) % modul;
-        }
-        base = (base * base) % modul; 
-        power /= 2;
-    }
-    return static_cast<int>(result);
-}
-//расширенный алгоритм евклида
-int extended_Gcd(int a, int b, int &x, int &y) {
-    if (b == 0) {
-        x = 1;
-        y = 0;
-        return a;
-    }
-    int x1, y1;
-    int d = extended_gcd(b, a % b, x1, y1); //b*x+(a%b)*y = d
-    x -= (a/b) * y; // bx + (a - (a/b) * b)) * y = d
-    swap(x,y); // ay + b*(x - (a/b) * y) = d
-    return d;
-}
+#include "shamir.h"
+#include "../scripts/crypto_math.h" // Твоя математика (powerBinary, modInverse, generateSafePrime, isPrimeMillerRabin)
+#include <stdexcept>
 
 
-int main(){
-    int n;
-    cout << "Введите ваше открытое число для шифрования: " << endl;
-    cin >> n;
+ // Функция 1: Просто генерирует число p через твой генератор
+
+int64_t shamirGeneratePrime() {
+
+    // Используем диапазон, безопасный от переполнений при умножении int64_t
+
+    return generateSafePrime(10000, 1000000);
+
+}
+
+// Функция 2: Работает с уже готовым p и подбирает под него ключ 
+int64_t shamirGenerateKeyForPrime(int64_t p) {
+    if (p <= 256 || !isPrimeMillerRabin(p, 10)) {
+        throw std::invalid_argument("Ошибка: Число p должно быть больше 256 и строго простым.");
+    }
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
     
-    return 0;
+    std::uniform_int_distribution<int64_t> dist(3, p - 2);
+
+    int64_t c = 0;
+    int32_t attempts = 0;
+    const int32_t maxAttempts = 10000; // Защита от бесконечного цикла, если что-то пойдет не так
+
+    while (attempts < maxAttempts) {
+        c = dist(gen);
+        
+        // Ключ должен быть нечетным 
+        // и строго взаимно простым с (p - 1)
+        if (modInverse(c, p - 1) != -1) {
+            return c; // Нашли случайный 
+        }
+        
+        attempts++;
+    }
+
+    throw std::runtime_error("Ошибка: Не удалось подобрать случайный ключ для данного числа p за отведенное число попыток.");
+}
+
+// Шаг 1: Исходные байты -> 8-байтовые блоки
+std::vector<uint8_t> shamirStartEncrypt(const std::vector<uint8_t>& plaintext, int64_t key, int64_t p) {
+    std::vector<uint8_t> result;
+    result.reserve(plaintext.size() * 8);
+    
+    for (uint8_t byte : plaintext) {
+        int64_t m = byte;
+        int64_t c = powerBinary(m, key, p);
+        
+        for (int32_t i = 7; i >= 0; --i) {
+            result.push_back(static_cast<uint8_t>((c >> (i * 8)) & 0xFF));
+        }
+    }
+    return result;
+}
+
+// Шаги 2 и 3: Промежуточная обработка блоков
+std::vector<uint8_t> shamirProcessBlocks(const std::vector<uint8_t>& blockData, int64_t key, int64_t p) {
+    if (blockData.size() % 8 != 0) {
+        throw std::invalid_argument("Ошибка: Размер данных не кратен 8 байтам. Файл поврежден.");
+    }
+    
+    std::vector<uint8_t> result;
+    result.reserve(blockData.size());
+
+    for (size_t i = 0; i < blockData.size(); i += 8) {
+        int64_t c = 0;
+        for (int32_t j = 0; j < 8; ++j) {
+            c |= (static_cast<int64_t>(blockData[i + j]) << ((7 - j) * 8));
+        }
+        
+        int64_t next_c = powerBinary(c, key, p);
+        
+        for (int32_t i = 7; i >= 0; --i) {
+            result.push_back(static_cast<uint8_t>((next_c >> (i * 8)) & 0xFF));
+        }
+    }
+    return result;
+}
+
+// Шаг 4: 8-байтовые блоки -> исходные байты
+std::vector<uint8_t> shamirFinalDecrypt(const std::vector<uint8_t>& blockData, int64_t key, int64_t p) {
+    if (blockData.size() % 8 != 0) {
+        throw std::invalid_argument("Ошибка: Размер данных не кратен 8 байтам. Файл поврежден.");
+    }
+    
+    std::vector<uint8_t> result;
+    result.reserve(blockData.size() / 8);
+
+    for (size_t i = 0; i < blockData.size(); i += 8) {
+        int64_t c = 0;
+        for (int32_t j = 0; j < 8; ++j) {
+            c |= (static_cast<int64_t>(blockData[i + j]) << ((7 - j) * 8));
+        }
+        
+        int64_t m = powerBinary(c, key, p);
+        result.push_back(static_cast<uint8_t>(m & 0xFF));
+    }
+    return result;
 }
