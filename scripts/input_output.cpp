@@ -166,7 +166,7 @@ void printMenu(int choi) {
         switch (choise)
         {
         case PrintOptions::Clear:{
-            std::this_thread::sleep_for(std::chrono::seconds(10));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             #if defined(_WIN32) || defined(_WIN64)
             std::system("cls");
             #elif defined(__linux__) || defined(__APPLE__)
