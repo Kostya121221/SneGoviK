@@ -7,17 +7,18 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <limits>
 enum class PrintOptions {
     Clear,
     Main,
     EncDec,
     InOut,
     EncChoise,
-
 };
-
 template <typename T>
-T readNumber(const std::string& prompt = "");
+T readNumber(const std::string& prompt = "", 
+             T min_val = std::numeric_limits<T>::lowest(), 
+             T max_val = std::numeric_limits<T>::max());
 bool loginFunc();
 std::vector<uint8_t> parseHexToBytes(const std::string& hexStr);
 std::vector<uint8_t> fromStreamToData(std::istream& source);

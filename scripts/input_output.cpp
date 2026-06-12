@@ -7,22 +7,21 @@
 const std::vector<std::string> allowed_passwords = {
         "SGK"
     };
+
 template <typename T>
-T readNumber(const std::string& prompt) {
-    T number;
+T readNumber(const std::string& prompt, T min_val, T max_val) {
+    T value;
     while (true) {
-        if (!prompt.empty()) {
-            std::cout << prompt;
-        }
-        if (std::cin >> number) {
-            // Успешно считали число, очищаем остаток строки (например, если ввели "123 abc")
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            return number;
+        std::cout << prompt;
+        if (std::cin >> value) {
+            if (value >= min_val && value <= max_val) {
+                return value;
+            }
+            std::cout << "[Ошибка] Число вышло за допустимые пределы! Повторите ввод.\n";
         } else {
-            // Сюда попадаем, если ввели буквы, спецсимволы или число слишком огромное
-            std::cerr << "[Ошибка] Некорректный ввод. Ожидалось число. Попробуйте еще раз.\n";
+            std::cout << "[Ошибка] Некорректный ввод! Ожидалось число.\n";
             std::cin.clear(); // Сбрасываем флаг ошибки cin
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Чистим буфер
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очищаем буфер
         }
     }
 }
@@ -239,7 +238,6 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
     return bytes;
 }
 
-template int32_t readNumber<int32_t>(const std::string& prompt);
-template int64_t readNumber<int64_t>(const std::string& prompt);
-template unsigned int readNumber<unsigned int>(const std::string&);
-template unsigned long readNumber<unsigned long>(const std::string&);
+template int readNumber<int>(const std::string&, int, int);
+template long readNumber<long>(const std::string&, long, long);
+template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
