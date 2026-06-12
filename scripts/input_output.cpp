@@ -231,15 +231,26 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
 template int32_t readNumber<int32_t>(const std::string&, int32_t, int32_t);
 template int64_t readNumber<int64_t>(const std::string&, int64_t, int64_t);
 =======
 template int readNumber<int>(const std::string&, int, int);
 template long readNumber<long>(const std::string&, long, long);
+=======
+>>>>>>> 89f3547 (Исправление вайбкодинга maksima)
 template unsigned long readNumber<unsigned long>(const std::string&, unsigned long, unsigned long);
+<<<<<<< HEAD
 =======
 template int32_t readNumber<int32_t>(const std::string& prompt);
 template int64_t readNumber<int64_t>(const std::string& prompt);
 >>>>>>> 808e67d (увелечение отклика программы)
+<<<<<<< HEAD
 >>>>>>> ad785d6 (увелечение отклика программы)
+=======
+=======
+template int32_t readNumber<int32_t>(const std::string&, int32_t, int32_t);
+template int64_t readNumber<int64_t>(const std::string&, int64_t, int64_t);
+>>>>>>> c3b8ea4 (Исправление вайбкодинга maksima)
+>>>>>>> 89f3547 (Исправление вайбкодинга maksima)
