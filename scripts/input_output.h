@@ -13,11 +13,13 @@ enum class PrintOptions {
     EncDec,
     InOut,
     EncChoise,
+
 };
 
 template <typename T>
 T readNumber(const std::string& prompt = "");
 bool loginFunc();
+std::vector<uint8_t> parseHexToBytes(const std::string& hexStr);
 std::vector<uint8_t> fromStreamToData(std::istream& source);
 //из вектора в строку и наоборот
 std::string dataToHex(const std::vector<uint8_t>& data);
@@ -28,7 +30,4 @@ uint64_t hexToInt(const std::string& hex_str);
 //прочитать консоль
 std::vector<uint8_t> readConsoleToBytes();
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
-
-std::vector<uint8_t> parseHexToBytes(const std::string& hexString);
 void printMenu(int choi);
-
