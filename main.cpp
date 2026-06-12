@@ -707,11 +707,7 @@ int main() {
                             // Защита консоли: выводим как символы только печатные данные, 
                             // чтобы терминал не ломался от управляющих ASCII кодов, если расшифровали мусором
                             for (uint8_t byte : processedData) {
-                                if (std::isprint(byte) || byte == '\n' || byte == '\r' || byte == '\t') {
-                                    std::cout << static_cast<char>(byte);
-                                } else {
-                                    std::cout << "."; // Заменяем непечатный мусор точкой
-                                }
+                                std::cout << static_cast<char>(byte);
                             }
                             std::cout << "\n---------------------------------\n";
                             break;
