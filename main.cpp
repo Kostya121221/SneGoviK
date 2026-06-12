@@ -7,6 +7,10 @@
 #include <limits>
 #include <stdexcept>
 
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 #include "ciphers/elgamal.h"
 #include "ciphers/shamir.h"
 #include "ciphers/des.h"
@@ -55,6 +59,11 @@ enum class MenuInputOutput : int32_t {
 
 int main() {
     std::setlocale(LC_ALL, "Russian");
+    
+    #ifdef _WIN32
+        SetConsoleCP(CP_UTF8);
+        SetConsoleOutputCP(CP_UTF8);
+    #endif
     
     if (!loginFunc()) {
         std::cout << "Введён неверный пароль\n";
