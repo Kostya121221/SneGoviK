@@ -196,18 +196,35 @@ int main() {
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
                         std::cout << "Ввод параметров для ElGamal:\n";
-                        int64_t p = readNumber<int64_t>("Введите p: ");
-                        int64_t g = readNumber<int64_t>("Введите g: ");
-                        int64_t y = readNumber<int64_t>("Введите y: ");
+                        int64_t p = readNumber<int64_t>("Введите простое число p: ", 3, std::numeric_limits<int64_t>::max());
+                        
+                        // Предполагается, что у тебя в crypto_math.h есть функция проверки на простоту
+                        if (!isPrime(p)) { 
+                            std::cerr << "[Ошибка] Число p должно быть простым! Операция отменена.\n";
+                            algoExecuted = false;
+                            break;
+                        }
+
+                        int64_t g = readNumber<int64_t>("Введите g (1 < g < p): ", 2, p - 1);
+                        int64_t y = readNumber<int64_t>("Введите y (1 < y < p): ", 2, p - 1);
 
                         std::vector<CipherPair> encryptedData = encryptBytesElGamal(processedData, p, g, y);
                         processedData = cipherToBytes(encryptedData);
                         break;
+                    
                     }
                     case MenuEncOptions::DES: {
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ (16 символов): ";
-                        std::cin >> keystr;
+                        while (true) {
+                            std::cout << "Введите HEX-ключ DES (строго 16 символов): ";
+                            std::cin >> keystr;
+                            
+                            // Проверяем длину и что все символы являются HEX
+                            if (keystr.length() == 16 && keystr.find_first_not_of("0123456789abcdefABCDEF") == std::string::npos) {
+                                break;
+                            }
+                            std::cerr << "[Ошибка] Неверный формат ключа! Ключ DES должен состоять ровно из 16 HEX-символов.\n";
+                        }
                         uint64_t key = hexToInt(keystr);
                         processedData = desEncrypt(processedData, key);
                         break;   
@@ -225,9 +242,19 @@ int main() {
                             break;
                         }
 
-                        int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
-                        int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
+                        std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ШИФРОВАНИЕ) ---\n";
+                        // ... твой код выбора подэтапа ...
 
+                        // p должно быть больше 255, чтобы гарантировать корректное шифрование любого байта
+                        int64_t p = readNumber<int64_t>("Введите общее простое число p (p > 255): ", 257, std::numeric_limits<int64_t>::max());
+                        
+                        if (!isPrime(p)) {
+                            std::cerr << "[Ошибка] Число p должно быть простым!\n";
+                            algoExecuted = false;
+                            break;
+                        }
+
+                        int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ", 2, p - 2);
                         if (modInverse(key, p - 1) == -1) {
                             std::cerr << "[Ошибка] Ключ не является взаимно простым с (p-1)! Операция отменена.\n";
                             algoExecuted = false;
@@ -235,6 +262,10 @@ int main() {
                         }
 
                         ShamirChoise shamChoise = static_cast<ShamirChoise>(shamirStep);
+                        if (processedData.empty()) {
+                             std::cerr << "[Ошибка] Нет данных для обработки! Сначала считайте файл или введите текст.\n";
+                            break; 
+                        }       
                         switch (shamChoise) {
                             case ShamirChoise::Sender: {
                                 processedData = shamirStartEncrypt(processedData, key, p);
@@ -260,8 +291,13 @@ int main() {
                     }
                     case MenuEncOptions::RSA: {
                         std::cout << "\n--- ШИФРОВАНИЕ RSA ---\n";
-                        int64_t e = readNumber<int64_t>("Введите открытую экспоненту e: ");
-                        int64_t n = readNumber<int64_t>("Введите общий модуль n: ");
+                        int64_t n = readNumber<int64_t>("Введите общий модуль n (n > 255): ", 256, std::numeric_limits<int64_t>::max());
+                        int64_t e = readNumber<int64_t>("Введите открытую экспоненту e (e < n): ", 3, n - 1);
+                        
+                        if (modInverse(e, n) == -1)  { 
+                            std::cout << "[Предупреждение] e и n имеют общие делители. Возможна ошибка шифрования.\n";
+                        }
+
                         try {
                             processedData = rsaEncrypt(processedData, e, n);
                             std::cout << "[Успех] Шифрование RSA успешно завершено.\n";
@@ -276,7 +312,11 @@ int main() {
                         std::string keystr;
                         std::cout << "Введите HEX-ключ: ";
                         std::cin >> keystr;
-                        
+                        if (keystr.length() % 2 != 0 || keystr.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) {
+                            std::cerr << "[Ошибка] Некорректная HEX-строка! Длина должна быть четной, символы от 0-9 и A-F.\n";
+                            algoExecuted = false;
+                            break;
+                        }
                         // ОЧИСТКА БУФЕРА 
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         
@@ -380,8 +420,13 @@ int main() {
                         std::ifstream file(fileName, std::ios::binary);
                         if (file) {
                             processedData = fromStreamToData(file);
-                            std::cout << "[Успех] Данные считаны. Размер: " << processedData.size() << " байт.\n";
-                            dataLoaded = true;
+                            // Защита: файл открылся, но он может быть абсолютно пустым
+                            if (processedData.empty()) {
+                                std::cerr << "[Ошибка] Файл пуст. Возврат в меню.\n";
+                            } else {
+                                std::cout << "[Успех] Данные считаны. Размер: " << processedData.size() << " байт.\n";
+                                dataLoaded = true;
+                            }
                         } else {
                             std::cerr << "[Ошибка] Не удалось открыть файл. Возврат в меню.\n";
                         }
@@ -398,10 +443,8 @@ int main() {
                         std::cout << "Вставьте HEX-строку для дешифрования.\n";
                         std::cout << "Для завершения ввода введите 'exit' с новой строки:\n";
                         
-                        //символы HEX
                         std::vector<uint8_t> hexChars = readConsoleToBytes();
 
-                        // Убираем последний '\n', который функция добавляет перед 'exit'
                         if (!hexChars.empty() && hexChars.back() == '\n') {
                             hexChars.pop_back();
                         }
@@ -411,19 +454,19 @@ int main() {
                             break;
                         }
 
-                        // Переводим вектор байт-символов в нормальную строку 
                         std::string rawHex(hexChars.begin(), hexChars.end());
 
                         try {
-                            // Конвертируем HEX-символы в реальные байты данных
                             processedData = parseHexToBytes(rawHex);
+                            if (processedData.empty()) {
+                                throw std::invalid_argument("Пустой результат конвертации.");
+                            }
                             std::cout << "[Успех] HEX успешно прочитан. Считано " << processedData.size() << " байт для дешифрования.\n";
                             dataLoaded = true;
                         } catch (const std::exception& e) {
                             std::cerr << "[Ошибка] Строка содержит некорректные HEX-символы! Данные не сохранены.\n";
                             processedData.clear();
                         }
-
                         break;
                     }
                     case MenuInputOutput::Exit:
@@ -434,7 +477,10 @@ int main() {
                         break;
                 }
 
-                if (!dataLoaded || choiseIn == MenuInputOutput::Exit) break;
+                // Жесткий барьер: если данные не загружены или выбран выход — не пускаем к алгоритмам
+                if (!dataLoaded || choiseIn == MenuInputOutput::Exit || processedData.empty()) {
+                    break;
+                }
 
                 printMenu(0);
                 printMenu(1);
@@ -454,6 +500,13 @@ int main() {
                         int64_t p = readNumber<int64_t>("Введите p: ");
                         int64_t x = readNumber<int64_t>("Введите x: ");
                         
+                        // Защита: базовые математические ограничения
+                        if (p <= 1 || x <= 0) {
+                            std::cerr << "[Ошибка] Некорректные параметры Эль-Гамаля. p должно быть > 1, x > 0.\n";
+                            algoExecuted = false;
+                            break;
+                        }
+                        
                         try {
                             processedData = decryptBytesElGamal(bytesToCipher(processedData), p, x);
                             std::cout << "[Успех] Дешифрование ElGamal завершено.\n";
@@ -467,8 +520,21 @@ int main() {
                         std::string keystr;
                         std::cout << "Введите HEX-ключ: ";
                         std::cin >> keystr;
-                        uint64_t key = hexToInt(keystr);
-                        processedData = desDecrypt(processedData, key);
+                        
+                        try {
+                            // Защита: проверяем валидность HEX-ключа перед его парсингом в число
+                            std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
+                            if (keyBytes.empty()) {
+                                throw std::invalid_argument("Ключ не может быть пустым.");
+                            }
+                            
+                            uint64_t key = hexToInt(keystr);
+                            processedData = desDecrypt(processedData, key);
+                            std::cout << "[Успех] Дешифрование DES завершено.\n";
+                        } catch (const std::exception& e) {
+                            std::cerr << "[Ошибка DES] Некорректный HEX-ключ! Дешифрование отменено.\n";
+                            algoExecuted = false;
+                        }
                         break;   
                     }
                     case MenuEncOptions::Shamir: {
@@ -487,9 +553,16 @@ int main() {
                         int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
                         int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
                         
+                        // Защита: исключаем деление на ноль или отрицательные модули
+                        if (p <= 1 || key <= 0) {
+                            std::cerr << "[Ошибка] Параметры p и ключ должны быть положительными, а p > 1.\n";
+                            algoExecuted = false;
+                            break;
+                        }
+
                         int64_t d = modInverse(key, p - 1);
                         if (d == -1) {
-                            std::cerr << "[Ошибка] Не удалось рассчитать обратный ключ дешифрования.\n";
+                            std::cerr << "[Ошибка] Не удалось рассчитать обратный ключ дешифрования. Возможно, ключ и (p-1) не взаимно просты.\n";
                             algoExecuted = false;
                             break;
                         }
@@ -527,6 +600,13 @@ int main() {
                         std::cout << "\n--- ДЕШИФРОВАНИЕ RSA ---\n";
                         int64_t d = readNumber<int64_t>("Введите секретную экспоненту d: ");
                         int64_t n = readNumber<int64_t>("Введите общий модуль n: ");
+                        
+                        // Защита от кривых модулей и ключей
+                        if (n <= 1 || d <= 0) {
+                            std::cerr << "[Ошибка] Некорректные параметры RSA. n должно быть > 1, d > 0.\n";
+                            algoExecuted = false;
+                            break;
+                        }
                         try {
                             processedData = rsaDecrypt(processedData, d, n);
                             std::cout << "[Успех] Дешифрование RSA успешно завершено.\n";
@@ -563,6 +643,12 @@ int main() {
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         uint64_t rounds = readNumber<uint64_t>("Введите количество раундов (по умолчанию 12): ");
                         if (rounds == 0) rounds = 12;
+                        
+                        // Защита: RC5 не любит слишком гигантское количество раундов (защита от переполнения стека/времени)
+                        if (rounds > 128) {
+                            std::cerr << "[Предупреждение] Слишком много раундов. Сброшено до 12.\n";
+                            rounds = 12;
+                        }
 
                         try {
                             std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
@@ -571,7 +657,7 @@ int main() {
                             }
                             
                             std::vector<uint8_t> decrypted = rc5Decrypt(processedData, keyBytes, rounds);
-                            if (decrypted.empty() && !processedData.empty()) {
+                            if (decrypted.empty()) {
                                 throw std::runtime_error("Ошибка дешифрования или неверный паддинг PKCS7.");
                             }
                             
@@ -589,7 +675,8 @@ int main() {
                         break;
                 }
 
-                if (algoExecuted) {
+                // Защита: Если алгоритм упал или вернул флаг false, не даем перезаписать файлы пустышкой
+                if (algoExecuted && !processedData.empty()) {
                     printMenu(0);
                     printMenu(1);
                     std::cout << "ВЫБЕРИТЕ ТИП ВЫВОДА РАСШИФРОВАННЫХ ДАННЫХ \n";
@@ -616,15 +703,25 @@ int main() {
                             std::cout << dataToHex(processedData) << std::endl;
                             std::cout << "-----------------------\n";
                             std::cout << "\n--- РЕЗУЛЬТАТ (ОБЫЧНЫЙ ТЕКСТ) ---\n";
+                            
+                            // Защита консоли: выводим как символы только печатные данные, 
+                            // чтобы терминал не ломался от управляющих ASCII кодов, если расшифровали мусором
                             for (uint8_t byte : processedData) {
-                                std::cout << static_cast<char>(byte);
+                                if (std::isprint(byte) || byte == '\n' || byte == '\r' || byte == '\t') {
+                                    std::cout << static_cast<char>(byte);
+                                } else {
+                                    std::cout << "."; // Заменяем непечатный мусор точкой
+                                }
                             }
                             std::cout << "\n---------------------------------\n";
                             break;
                         }
                         default:
+                            std::cerr << "[Ошибка] Неверный выбор типа вывода.\n";
                             break;
                     }
+                } else {
+                    std::cerr << "[Защита системы] Данные повреждены или не были расшифрованы. Вывод заблокирован.\n";
                 }
                 break;
             }
