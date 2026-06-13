@@ -65,7 +65,7 @@ std::vector<uint8_t> rsaEncrypt(const std::vector<uint8_t>& plaintext, int64_t e
 
     for (uint8_t byte : plaintext) {
         int64_t m = byte;
-        int64_t c = powerBinary(m, e, n); // Твой powerBinary
+        int64_t c = powerBinary(m, e, n);
 
         for (int32_t i = 7; i >= 0; --i) {
             ciphertext.push_back(static_cast<uint8_t>((c >> (i * 8)) & 0xFF));

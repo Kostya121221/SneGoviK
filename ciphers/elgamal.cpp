@@ -15,31 +15,24 @@ int64_t findPrimitiveRoot(int64_t p) {
 
     while (true) {
         int64_t g = dist(gen);
-        // Для безопасного простого числа g является первообразным корнем,
-        // если g^2 != 1 (mod p) и g^q != 1 (mod p)
         if (powerBinary(g, 2, p) != 1 && powerBinary(g, q, p) != 1) {
             return g;
         }
     }
 }
 void generateElGamalKeys(int64_t &p, int64_t &g, int64_t &x, int64_t &y) {
-    // Задаем диапазон для поиска
     int64_t min_val = 100000000; // Минимальная граница
     int64_t max_val = 2000000000; // Максимальная граница
 
-    // Генерируем случайное простое p
     p = generateSafePrime(min_val, max_val);
 
-    // Находим случайный первообразный корень g
     g = findPrimitiveRoot(p);
 
-    // Выбираем случайный закрытый ключ x в диапазоне [2, p-2]
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<int64_t> dist(2, p - 2);
     x = dist(gen);
 
-    // Вычисляем открытый ключ y
     y = powerBinary(g, x, p);
 
     std::cout << "\n=== Ключи системы Эль-Гамаля успешно СГЕНЕРИРОВАНЫ ===\n";
@@ -55,17 +48,14 @@ std::vector<CipherPair> encryptBytesElGamal(const std::vector<uint8_t> &data, in
     std::random_device rd;
     std::mt19937_64 gen(rd());
 
-    // Диапазон для k: [2, p - 2]
     std::uniform_int_distribution<int64_t> distrib(2, p - 2);
 
     int64_t k = 0;
     int64_t dummy_u = 0, dummy_v = 0; // Временные переменные для вызова функции
 
-    // Цикл генерации k с проверкой через extendedGCD
     while (true) {
         k = distrib(gen);
     
-        // Если НОД(k, p - 1) равен 1, значит число подходит
         if (extendedGCD(k, p - 1, dummy_u, dummy_v) == 1) {
             break;
         }
@@ -113,11 +103,9 @@ std::vector<uint8_t> decryptBytesElGamal(const std::vector<CipherPair> &cipher, 
 std::vector<uint8_t> cipherToBytes(const std::vector<CipherPair>& cipher) {
     if (cipher.empty()) return {};
 
-    // Указатель на начало данных структур приводим к указателю на байты
     const uint8_t* bytePtr = reinterpret_cast<const uint8_t*>(cipher.data());
     size_t totalBytes = cipher.size() * sizeof(CipherPair);
 
-    //скопируем память по диапазону указателей
     std::cout << std::dec << std::endl;
     return std::vector<uint8_t>(bytePtr, bytePtr + totalBytes);
 }

@@ -1,13 +1,11 @@
 #include "shamir.h"
-#include "../scripts/crypto_math.h" // Твоя математика (powerBinary, modInverse, generateSafePrime, isPrimeMillerRabin)
+#include "../scripts/crypto_math.h"
 #include <stdexcept>
 
 
- // Функция 1: Просто генерирует число p через твой генератор
+ // Функция 1: генерирует число p
 
 int64_t shamirGeneratePrime() {
-
-    // Используем диапазон, безопасный от переполнений при умножении int64_t
 
     return generateSafePrime(10000, 1000000);
 
@@ -30,8 +28,6 @@ int64_t shamirGenerateKeyForPrime(int64_t p) {
     while (attempts < maxAttempts) {
         c = dist(gen);
         
-        // Ключ должен быть нечетным 
-        // и строго взаимно простым с (p - 1)
         if (modInverse(c, p - 1) != -1) {
             return c; // Нашли случайный 
         }

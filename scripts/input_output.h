@@ -33,5 +33,5 @@ uint64_t hexToInt(const std::string& hex_str);
 std::vector<uint8_t> readConsoleToBytes();
 //из вектора в файл
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
-//Для меня
+
 void printMenu(int choi);

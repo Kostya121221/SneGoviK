@@ -117,7 +117,6 @@ int main() {
                         
                         int32_t formatChoice = readNumber<int32_t>("Выберите формат: ");
                         
-                        // Чистим буфер перед вызовом getline внутри твоей функции
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         
                         processedData.clear();
@@ -128,7 +127,6 @@ int main() {
                             
                             processedData = readConsoleToBytes();
 
-                            // Убираем последний '\n'
                             if (!processedData.empty() && processedData.back() == '\n') {
                                 processedData.pop_back();
                             }
@@ -146,7 +144,6 @@ int main() {
 
                             std::vector<uint8_t> hexChars = readConsoleToBytes();
 
-                            // Убираем последний '\n' перед exit
                             if (!hexChars.empty() && hexChars.back() == '\n') {
                                 hexChars.pop_back();
                             }
@@ -156,7 +153,6 @@ int main() {
                                 break;
                             }
 
-                            // Переводим вектор байт-символов в строку, чтобы скормить её parseHexToBytes
                             std::string rawHex(hexChars.begin(), hexChars.end());
 
                             try {
@@ -204,7 +200,6 @@ int main() {
                         std::cout << "Ввод параметров для ElGamal:\n";
                         int64_t p = readNumber<int64_t>("Введите простое число p: ", 3, std::numeric_limits<int64_t>::max());
                         
-                        // Предполагается, что у тебя в crypto_math.h есть функция проверки на простоту
                         if (!isPrime(p)) { 
                             std::cerr << "[Ошибка] Число p должно быть простым! Операция отменена.\n";
                             algoExecuted = false;
@@ -225,7 +220,6 @@ int main() {
                             std::cout << "Введите HEX-ключ DES (строго 16 символов): ";
                             std::cin >> keystr;
                             
-                            // Проверяем длину и что все символы являются HEX
                             if (keystr.length() == 16 && keystr.find_first_not_of("0123456789abcdefABCDEF") == std::string::npos) {
                                 break;
                             }
@@ -250,7 +244,6 @@ int main() {
 
                         std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ШИФРОВАНИЕ) ---\n";
 
-                        // p должно быть больше 255, чтобы гарантировать корректное шифрование любого байта
                         int64_t p = readNumber<int64_t>("Введите общее простое число p (p > 255): ", 257, std::numeric_limits<int64_t>::max());
                         
                         if (!isPrime(p)) {
@@ -425,7 +418,6 @@ int main() {
                         std::ifstream file(fileName, std::ios::binary);
                         if (file) {
                             processedData = fromStreamToData(file);
-                            // Защита: файл открылся, но он может быть абсолютно пустым
                             if (processedData.empty()) {
                                 std::cerr << "[Ошибка] Файл пуст. Возврат в меню.\n";
                             } else {
@@ -504,7 +496,6 @@ int main() {
                         int64_t p = readNumber<int64_t>("Введите p: ");
                         int64_t x = readNumber<int64_t>("Введите x: ");
                         
-                        // Защита: базовые математические ограничения
                         if (p <= 1 || x <= 0) {
                             std::cerr << "[Ошибка] Некорректные параметры Эль-Гамаля. p должно быть > 1, x > 0.\n";
                             algoExecuted = false;
@@ -526,7 +517,6 @@ int main() {
                         std::cin >> keystr;
                         
                         try {
-                            // Защита: проверяем валидность HEX-ключа перед его парсингом в число
                             std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
                             if (keyBytes.empty()) {
                                 throw std::invalid_argument("Ключ не может быть пустым.");
@@ -557,7 +547,6 @@ int main() {
                         int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
                         int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
                         
-                        // Защита: исключаем деление на ноль или отрицательные модули
                         if (p <= 1 || key <= 0) {
                             std::cerr << "[Ошибка] Параметры p и ключ должны быть положительными, а p > 1.\n";
                             algoExecuted = false;
@@ -605,7 +594,6 @@ int main() {
                         int64_t d = readNumber<int64_t>("Введите секретную экспоненту d: ");
                         int64_t n = readNumber<int64_t>("Введите общий модуль n: ");
                         
-                        // Защита от кривых модулей и ключей
                         if (n <= 1 || d <= 0) {
                             std::cerr << "[Ошибка] Некорректные параметры RSA. n должно быть > 1, d > 0.\n";
                             algoExecuted = false;
@@ -648,7 +636,6 @@ int main() {
                         uint64_t rounds = readNumber<uint64_t>("Введите количество раундов (по умолчанию 12): ");
                         if (rounds == 0) rounds = 12;
                         
-                        // Защита: RC5 не любит слишком гигантское количество раундов (защита от переполнения стека/времени)
                         if (rounds > 128) {
                             std::cerr << "[Предупреждение] Слишком много раундов. Сброшено до 12.\n";
                             rounds = 12;
