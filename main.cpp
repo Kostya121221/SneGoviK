@@ -19,6 +19,7 @@
 #include "ciphers/rc5.h" 
 #include "scripts/crypto_math.h"
 #include "scripts/input_output.h"
+
 enum class ElgamalChoise {
     Exit = 0,
     GenerateKey = 1,
