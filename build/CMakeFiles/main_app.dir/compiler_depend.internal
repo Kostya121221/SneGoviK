@@ -467,6 +467,8 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
 main_app
+ /home/galkin/SneGoviK/lib/librsa.so
+ /home/galkin/SneGoviK/lib/libshamir.so
  /lib/x86_64-linux-gnu/libc.so.6
  /lib/x86_64-linux-gnu/libm.so.6
  /lib/x86_64-linux-gnu/libmvec.so.1

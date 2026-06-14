@@ -1,1 +1,1 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/main_app.dir/link.d CMakeFiles/main_app.dir/main.cpp.o CMakeFiles/main_app.dir/scripts/input_output.cpp.o -o main_app  -Wl,-rpath,"\$ORIGIN/../lib" -ldl
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/main_app.dir/link.d CMakeFiles/main_app.dir/main.cpp.o CMakeFiles/main_app.dir/scripts/input_output.cpp.o -o main_app   -L/home/galkin/SneGoviK/lib  -Wl,-rpath,/home/galkin/SneGoviK/lib -lrsa -lshamir -ldl

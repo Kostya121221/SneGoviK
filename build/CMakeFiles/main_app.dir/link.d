@@ -4,6 +4,8 @@ main_app: \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o \
   CMakeFiles/main_app.dir/main.cpp.o \
   CMakeFiles/main_app.dir/scripts/input_output.cpp.o \
+  /home/galkin/SneGoviK/lib/librsa.so \
+  /home/galkin/SneGoviK/lib/libshamir.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libdl.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libm.so \
@@ -43,6 +45,10 @@ main_app: \
 CMakeFiles/main_app.dir/main.cpp.o:
 
 CMakeFiles/main_app.dir/scripts/input_output.cpp.o:
+
+/home/galkin/SneGoviK/lib/librsa.so:
+
+/home/galkin/SneGoviK/lib/libshamir.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libdl.a:
 
