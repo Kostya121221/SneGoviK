@@ -282,16 +282,8 @@ int main() {
         switch (choiseEncDec) {
             case MenuFunctions::Encrypt: {
                 printMenu(1);
-<<<<<<< HEAD
 
                 std::cout << "ВЫБЕРИТЕ ТИП ВВОДA ДАННЫХ ДЛЯ ШИФРОВКИ\n";
-=======
-<<<<<<< HEAD
-                std::cout << "ВЫБЕРИТЕ ТИП ВВОДО ДАННЫХ ДЛЯ ШИФРОВКИ\n";
-=======
-                std::cout << "ВЫБЕРИТЕ ТИП ВВОДA ДАННЫХ ДЛЯ ШИФРОВКИ\n";
->>>>>>> f8b7825 (Исправлени орфографической ошибки в main.cpp)
->>>>>>> ccb70fa (Исправлени орфографической ошибки в main.cpp)
                 printMenu(3);
                 
                 MenuInputOutput choiseIn = static_cast<MenuInputOutput>(readNumber<int32_t>("Ваш выбор: "));

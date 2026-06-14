@@ -226,6 +226,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/c++/13/algorithm \
+  /usr/include/c++/13/array \
   /usr/include/c++/13/backward/binders.h \
   /usr/include/c++/13/bit \
   /usr/include/c++/13/bits/algorithmfwd.h \
@@ -243,6 +244,8 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/bits/cpp_type_traits.h \
   /usr/include/c++/13/bits/cxxabi_forced.h \
   /usr/include/c++/13/bits/cxxabi_init_exception.h \
+  /usr/include/c++/13/bits/enable_special_members.h \
+  /usr/include/c++/13/bits/erase_if.h \
   /usr/include/c++/13/bits/exception.h \
   /usr/include/c++/13/bits/exception_defines.h \
   /usr/include/c++/13/bits/exception_ptr.h \
@@ -250,6 +253,8 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/bits/functexcept.h \
   /usr/include/c++/13/bits/functional_hash.h \
   /usr/include/c++/13/bits/hash_bytes.h \
+  /usr/include/c++/13/bits/hashtable.h \
+  /usr/include/c++/13/bits/hashtable_policy.h \
   /usr/include/c++/13/bits/invoke.h \
   /usr/include/c++/13/bits/ios_base.h \
   /usr/include/c++/13/bits/istream.tcc \
@@ -266,6 +271,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/bits/move.h \
   /usr/include/c++/13/bits/nested_exception.h \
   /usr/include/c++/13/bits/new_allocator.h \
+  /usr/include/c++/13/bits/node_handle.h \
   /usr/include/c++/13/bits/ostream.tcc \
   /usr/include/c++/13/bits/ostream_insert.h \
   /usr/include/c++/13/bits/parse_numbers.h \
@@ -278,6 +284,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/c++/13/bits/sstream.tcc \
   /usr/include/c++/13/bits/std_abs.h \
+  /usr/include/c++/13/bits/std_function.h \
   /usr/include/c++/13/bits/std_thread.h \
   /usr/include/c++/13/bits/stl_algo.h \
   /usr/include/c++/13/bits/stl_algobase.h \
@@ -299,6 +306,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/bits/this_thread_sleep.h \
   /usr/include/c++/13/bits/uniform_int_dist.h \
   /usr/include/c++/13/bits/unique_ptr.h \
+  /usr/include/c++/13/bits/unordered_map.h \
   /usr/include/c++/13/bits/uses_allocator.h \
   /usr/include/c++/13/bits/uses_allocator_args.h \
   /usr/include/c++/13/bits/utility.h \
@@ -307,6 +315,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/cerrno \
   /usr/include/c++/13/chrono \
   /usr/include/c++/13/clocale \
+  /usr/include/c++/13/compare \
   /usr/include/c++/13/cstddef \
   /usr/include/c++/13/cstdint \
   /usr/include/c++/13/cstdio \
@@ -317,12 +326,14 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/debug/assertions.h \
   /usr/include/c++/13/debug/debug.h \
   /usr/include/c++/13/exception \
+  /usr/include/c++/13/ext/aligned_buffer.h \
   /usr/include/c++/13/ext/alloc_traits.h \
   /usr/include/c++/13/ext/atomicity.h \
   /usr/include/c++/13/ext/numeric_traits.h \
   /usr/include/c++/13/ext/string_conversions.h \
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/fstream \
+  /usr/include/c++/13/functional \
   /usr/include/c++/13/initializer_list \
   /usr/include/c++/13/iomanip \
   /usr/include/c++/13/ios \
@@ -347,6 +358,7 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/include/c++/13/tuple \
   /usr/include/c++/13/type_traits \
   /usr/include/c++/13/typeinfo \
+  /usr/include/c++/13/unordered_map \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
   /usr/include/endian.h \
@@ -495,6 +507,8 @@ main_app: /lib/x86_64-linux-gnu/libc.so.6 \
 
 /lib/x86_64-linux-gnu/libc.so.6:
 
+/usr/include/c++/13/unordered_map:
+
 /usr/include/c++/13/ratio:
 
 /usr/lib/x86_64-linux-gnu/crtn.o:
@@ -503,6 +517,10 @@ main_app: /lib/x86_64-linux-gnu/libc.so.6 \
 
 /usr/include/c++/13/pstl/execution_defs.h:
 
+/usr/include/c++/13/compare:
+
+/usr/include/c++/13/bits/unordered_map.h:
+
 /usr/include/c++/13/bits/unique_ptr.h:
 
 /usr/include/c++/13/bits/uniform_int_dist.h:
@@ -510,6 +528,18 @@ main_app: /lib/x86_64-linux-gnu/libc.so.6 \
 /usr/include/c++/13/bits/this_thread_sleep.h:
 
 /usr/include/c++/13/bits/stl_heap.h:
+
+/usr/include/c++/13/bits/std_function.h:
+
+/usr/include/c++/13/bits/hashtable_policy.h:
+
+/usr/include/c++/13/bits/hashtable.h:
+
+/usr/include/c++/13/bits/erase_if.h:
+
+/usr/include/c++/13/bits/enable_special_members.h:
+
+/usr/include/c++/13/array:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
 
@@ -548,6 +578,8 @@ main_app: /lib/x86_64-linux-gnu/libc.so.6 \
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/c++/13/ext/aligned_buffer.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
@@ -700,6 +732,8 @@ CMakeFiles/main_app.dir/main.cpp.o:
 /usr/lib/x86_64-linux-gnu/Scrt1.o:
 
 /usr/include/wchar.h:
+
+/usr/include/c++/13/functional:
 
 /usr/include/c++/13/bits/allocator.h:
 
@@ -942,6 +976,8 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/usr/include/c++/13/bits/node_handle.h:
 
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
