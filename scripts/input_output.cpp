@@ -4,8 +4,9 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
-const std::vector<std::string> allowed_passwords = {
-        "SGK"
+#include <functional>
+const std::vector<size_t> allowed_passwords = {
+        13092460576727867504ULL,
     };
 const int64_t TIME_SLEEP = 1;
 
@@ -30,7 +31,9 @@ bool loginFunc(){
     std::cout << "Введите пароль от данного програмного обеспечения"<< std::endl;
     std::string password;
     std::cin >> password;
-    auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), password);
+
+    std::hash<std::string> hasher;
+    auto it = std::find(allowed_passwords.begin(), allowed_passwords.end(), hasher(password));
     return it != allowed_passwords.end();
 }
 
