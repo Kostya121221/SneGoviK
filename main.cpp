@@ -6,20 +6,26 @@
 #include <clocale>
 #include <limits>
 #include <stdexcept>
-
+#include <stdio.h>
+#include <dlfcn.h>
 #ifdef _WIN32
     #include <windows.h>
 #endif
 
-#include "ciphers/elgamal.h"
-#include "ciphers/shamir.h"
-#include "ciphers/des.h"
-#include "ciphers/rsa.h" 
-#include "ciphers/rc4.h"
-#include "ciphers/rc5.h" 
-#include "scripts/crypto_math.h"
-#include "scripts/input_output.h"
+#include <input_output.h>
+enum class RsaKeyGenOptions : int32_t {
+    Exit = 0,
+    Auto = 1,
+    Manual = 2
+};
 
+struct RSAKeys {
+    int64_t n;
+    int64_t e;
+    int64_t d;
+    int64_t p;
+    int64_t q;
+};
 enum class ElgamalChoise {
     Exit = 0,
     GenerateKey = 1,
@@ -57,7 +63,28 @@ enum class MenuInputOutput : int32_t {
     File = 1,
     Console = 2
 };
+struct CipherPair {
+    int64_t a;
+    int64_t b;
+};
+template <typename T>
+T readNumber(const std::string& prompt = "", T min_val = std::numeric_limits<T>::lowest(), T max_val = std::numeric_limits<T>::max()){
+    T value;
+        while (true) {
+            std::cout << prompt;
+            if (std::cin >> value) {
+                if (value >= min_val && value <= max_val) {
+                    return value;
+                }
+                std::cout << "[Ошибка] Число вышло за допустимые пределы! Повторите ввод.\n";
+            } else {
+                std::cout << "[Ошибка] Некорректный ввод! Ожидалось число.\n";
+                std::cin.clear(); // Сбрасываем флаг ошибки cin
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очищаем буфер
+            }
+        }
 
+             }
 int main() {
     std::setlocale(LC_ALL, "Russian");
     
@@ -71,9 +98,179 @@ int main() {
         return 0;
     }
     printMenu(0);
+    typedef int64_t (*shamirGeneratePrime_t)();
+    typedef int64_t (*shamirGenerateKeyForPrime_t)(int64_t);
+    typedef std::vector<uint8_t> (*shamirStartEncrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*shamirProcessBlocks_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*shamirFinalDecrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+
+    shamirGeneratePrime_t shamirGeneratePrime = nullptr;
+    shamirGenerateKeyForPrime_t shamirGenerateKeyForPrime = nullptr;
+    shamirStartEncrypt_t shamirStartEncrypt = nullptr;
+    shamirProcessBlocks_t shamirProcessBlocks = nullptr;
+    shamirFinalDecrypt_t shamirFinalDecrypt = nullptr;
+    void* des_handle = dlopen("des.so", RTLD_LAZY);
+    if (!des_handle) {
+        std::cerr << "Ошибка загрузки .so: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef uint64_t (*generateKey_t)();
+    typedef std::vector<uint8_t> (*encrypt_t)(const std::vector<uint8_t>&, uint64_t);
+    typedef std::vector<uint8_t> (*decrypt_t)(const std::vector<uint8_t>&, uint64_t);
+
+    generateKey_t generateDesKey = (generateKey_t)dlsym(des_handle, "generateDesKey");
+    encrypt_t desEncrypt = (encrypt_t)dlsym(des_handle, "desEncrypt");
+    decrypt_t desDecrypt = (decrypt_t)dlsym(des_handle, "desDecrypt");
+
+    if (!generateDesKey || !desEncrypt || !desDecrypt) {
+        std::cerr << "Ошибка поиска функций: " << dlerror() << std::endl;
+        dlclose(des_handle);
+        return 1;
+    }
+    void* el_handle = dlopen("elgamal.so", RTLD_LAZY);
+    if (!el_handle) {
+        std::cerr << "Ошибка загрузки библиотеки: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef int64_t (*findPrimitiveRoot_t)(int64_t);
+    typedef void (*generateElGamalKeys_t)(int64_t&, int64_t&, int64_t&, int64_t&);
+    typedef std::vector<CipherPair> (*encryptBytesElGamal_t)(const std::vector<uint8_t>&, int64_t, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*decryptBytesElGamal_t)(const std::vector<CipherPair>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*cipherToBytes_t)(const std::vector<CipherPair>&);
+    typedef std::vector<CipherPair> (*bytesToCipher_t)(const std::vector<uint8_t>&);
+
+    generateElGamalKeys_t generateElGamalKeys = (generateElGamalKeys_t)dlsym(el_handle, "generateElGamalKeys");
+    encryptBytesElGamal_t encryptBytesElGamal = (encryptBytesElGamal_t)dlsym(el_handle, "encryptBytesElGamal");
+    decryptBytesElGamal_t decryptBytesElGamal = (decryptBytesElGamal_t)dlsym(el_handle, "decryptBytesElGamal");
+    cipherToBytes_t cipherToBytes = (cipherToBytes_t)dlsym(el_handle, "cipherToBytes");
+    bytesToCipher_t bytesToCipher = (bytesToCipher_t)dlsym(el_handle, "bytesToCipher");
+
+    if (!generateElGamalKeys || !encryptBytesElGamal || !decryptBytesElGamal || !cipherToBytes || !bytesToCipher) {
+        std::cerr << "Ошибка поиска функций: " << dlerror() << std::endl;
+        dlclose(el_handle);
+        return 1;
+    }
+    void* rc4_handle = dlopen("rc4.so", RTLD_LAZY);
+    if (!rc4_handle) {
+        std::cerr << "Ошибка загрузки .so: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef std::vector<uint8_t> (*generateRC4Key_t)(size_t);
+    typedef std::vector<uint8_t> (*rc4Transform_t)(const std::vector<uint8_t>&, const std::vector<uint8_t>&);
+
+    generateRC4Key_t generateRC4Key = (generateRC4Key_t)dlsym(rc4_handle, "generateRC4Key");
+    rc4Transform_t rc4Transform = (rc4Transform_t)dlsym(rc4_handle, "rc4Transform");
+
+    if (!generateRC4Key || !rc4Transform) {
+        std::cerr << "Ошибка поиска функций: " << dlerror() << std::endl;
+        dlclose(rc4_handle);
+        return 1;
+    }
+
+    void* rc5_handle = dlopen("rc5.so", RTLD_LAZY);
+    if (!rc5_handle) {
+        std::cerr << "Не удалось загрузить RC5: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef std::vector<uint8_t> (*generateRC5Key_t)(size_t);
+    typedef std::vector<uint8_t> (*rc5Encrypt_t)(const std::vector<uint8_t>&, const std::vector<uint8_t>&, unsigned int);
+    typedef std::vector<uint8_t> (*rc5Decrypt_t)(const std::vector<uint8_t>&, const std::vector<uint8_t>&, unsigned int);
+
+    generateRC5Key_t generateRC5Key = (generateRC5Key_t)dlsym(rc5_handle, "generateRC5Key");
+    rc5Encrypt_t rc5Encrypt = (rc5Encrypt_t)dlsym(rc5_handle, "rc5Encrypt");
+    rc5Decrypt_t rc5Decrypt = (rc5Decrypt_t)dlsym(rc5_handle, "rc5Decrypt");
+
+    if (!generateRC5Key || !rc5Encrypt || !rc5Decrypt) {
+        std::cerr << "Ошибка загрузки функций RC5: " << dlerror() << std::endl;
+        dlclose(rc5_handle);
+        return 1;
+    }
+    void* rsa_handle = dlopen("rsa.so", RTLD_LAZY);
+    if (!rsa_handle) {
+        std::cerr << "Ошибка загрузки RSA библиотеки: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef RSAKeys (*rsaGenerateKeys_t)(RsaKeyGenOptions, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*rsaEncrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*rsaDecrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+
+    rsaGenerateKeys_t rsaGenerateKeys = (rsaGenerateKeys_t)dlsym(rsa_handle, "rsaGenerateKeys");
+    rsaEncrypt_t rsaEncrypt = (rsaEncrypt_t)dlsym(rsa_handle, "rsaEncrypt");
+    rsaDecrypt_t rsaDecrypt = (rsaDecrypt_t)dlsym(rsa_handle, "rsaDecrypt");
+
+    if (!rsaGenerateKeys || !rsaEncrypt || !rsaDecrypt) {
+        std::cerr << "Ошибка поиска функций RSA: " << dlerror() << std::endl;
+        dlclose(rsa_handle);
+        return 1;
+    }
+    void* shamir_handle = dlopen("shamir.so", RTLD_LAZY);
+    if (!shamir_handle) {
+        std::cerr << "Ошибка загрузки библиотеки Шамира: " << dlerror() << std::endl;
+        return 1;
+    }
+    shamirGeneratePrime = (shamirGeneratePrime_t)dlsym(shamir_handle, "shamirGeneratePrime");
+    shamirGenerateKeyForPrime = (shamirGenerateKeyForPrime_t)dlsym(shamir_handle, "shamirGenerateKeyForPrime");
+    shamirStartEncrypt = (shamirStartEncrypt_t)dlsym(shamir_handle, "shamirStartEncrypt");
+    shamirProcessBlocks = (shamirProcessBlocks_t)dlsym(shamir_handle, "shamirProcessBlocks");
+    shamirFinalDecrypt = (shamirFinalDecrypt_t)dlsym(shamir_handle, "shamirFinalDecrypt");
+
+    if (!shamirGeneratePrime || !shamirGenerateKeyForPrime || !shamirStartEncrypt || !shamirProcessBlocks || !shamirFinalDecrypt) {
+        std::cerr << "Ошибка поиска функций Шамира: " << dlerror() << std::endl;
+        dlclose(shamir_handle);
+        return 1;
+    }
+    
+    typedef int64_t (*shamirGeneratePrime_t)();
+    typedef int64_t (*shamirGenerateKeyForPrime_t)(int64_t);
+    typedef std::vector<uint8_t> (*shamirStartEncrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*shamirProcessBlocks_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+    typedef std::vector<uint8_t> (*shamirFinalDecrypt_t)(const std::vector<uint8_t>&, int64_t, int64_t);
+
+    
+
+
+    if (!shamirGeneratePrime || !shamirGenerateKeyForPrime || !shamirStartEncrypt || !shamirProcessBlocks || !shamirFinalDecrypt) {
+        std::cerr << "Ошибка поиска функций Шамира: " << dlerror() << std::endl;
+        dlclose(shamir_handle);
+        return 1;
+    }
+    
+    void* math_handle = dlopen("crypto_math.so", RTLD_LAZY);
+    if (!math_handle) {
+        std::cerr << "Ошибка загрузки библиотеки математики: " << dlerror() << std::endl;
+        return 1;
+    }
+
+    typedef bool (*isPrime_t)(int64_t);
+    isPrime_t isPrime = nullptr;
+    typedef int64_t (*powerBinary_t)(int64_t, int64_t, int64_t);
+    typedef int64_t (*extendedGCD_t)(int64_t, int64_t, int64_t&, int64_t&);
+    typedef int64_t (*modInverse_t)(int64_t, int64_t);
+    typedef bool (*isPrimeMillerRabin_t)(int64_t, int);
+    typedef int64_t (*generateSafePrime_t)(int64_t, int64_t);
+
+    extendedGCD_t extendedGCD = (extendedGCD_t)dlsym(math_handle, "extendedGCD");
+    modInverse_t modInverse = (modInverse_t)dlsym(math_handle, "modInverse");
+    isPrimeMillerRabin_t isPrimeMillerRabin = (isPrimeMillerRabin_t)dlsym(math_handle, "isPrimeMillerRabin");
+    isPrime = (isPrime_t)dlsym(math_handle, "isPrime");
+    if (!isPrime) {
+        std::cerr << "Функция isPrime не найдена: " << dlerror() << std::endl;
+        dlclose(math_handle);
+        return 1;
+    }
+    if (!extendedGCD || !modInverse || !isPrimeMillerRabin) {
+        std::cerr << "Ошибка поиска математических функций: " << dlerror() << std::endl;
+        dlclose(math_handle);
+        return 1;
+    }
     MenuFunctions choiseEncDec;
     std::vector<uint8_t> processedData;
-
+    std::cout<< "Динамические библиотеки подгружены!"<<std::endl;
     do {
         printMenu(1);
         printMenu(2);
@@ -81,7 +278,7 @@ int main() {
         int32_t userChoise = readNumber<int32_t>("Выберите пункт меню: ");
         choiseEncDec = static_cast<MenuFunctions>(userChoise);
         printMenu(0);
-
+        
         switch (choiseEncDec) {
             case MenuFunctions::Encrypt: {
                 printMenu(1);

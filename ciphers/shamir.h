@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 
-
+extern "C" {
 // Функция 1: Генерирует случайное безопасное простое число p
 int64_t shamirGeneratePrime();
 
@@ -16,4 +16,4 @@ std::vector<uint8_t> shamirStartEncrypt(const std::vector<uint8_t>& plaintext, i
 std::vector<uint8_t> shamirProcessBlocks(const std::vector<uint8_t>& blockData, int64_t key, int64_t p);
 
 // Шаг 4: Финальное сжатие 8-байтовых блоков в исходные байты (Дешифрование Боба)
-std::vector<uint8_t> shamirFinalDecrypt(const std::vector<uint8_t>& blockData, int64_t key, int64_t p);
+std::vector<uint8_t> shamirFinalDecrypt(const std::vector<uint8_t>& blockData, int64_t key, int64_t p);}

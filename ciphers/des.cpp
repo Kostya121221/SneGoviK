@@ -110,7 +110,7 @@ static const uint8_t S_BOXES[8][64] = {
         2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
     }
 };
-
+extern "C" {
 uint64_t generateDesKey() {
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -243,4 +243,4 @@ std::vector<uint8_t> desDecrypt(const std::vector<uint8_t>& ciphertext, uint64_t
     decrypted.resize(decrypted.size() - padding_len);
 
     return decrypted;
-}
+}}

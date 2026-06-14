@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -Wl,--dependency-file=CMakeFiles/des.dir/link.d -Wl,-soname,libdes.so -o /home/galkin/SneGoviK/lib/libdes.so CMakeFiles/des.dir/ciphers/des.cpp.o  -Wl,-rpath,"\$ORIGIN/lib"

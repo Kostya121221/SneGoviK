@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -Wl,--dependency-file=CMakeFiles/rsa.dir/link.d -Wl,-soname,librsa.so -o /home/galkin/SneGoviK/lib/librsa.so CMakeFiles/rsa.dir/ciphers/rsa.cpp.o  -Wl,-rpath,"\$ORIGIN/lib"

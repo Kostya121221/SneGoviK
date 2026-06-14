@@ -6,7 +6,7 @@
 // Константы для w=32
 static const uint32_t Pw = 0xB7E15163;
 static const uint32_t Qw = 0x9E3779B9;
-
+extern "C" {
 static inline uint32_t rol(uint32_t x, uint32_t s) {
     s &= 0x1F;
     return (x << s) | (x >> (32 - s));
@@ -139,4 +139,4 @@ std::vector<uint8_t> rc5Decrypt(const std::vector<uint8_t>& data, const std::vec
     if (!pkcs7Unpad(result))
         return {}; 
     return result;
-}
+}}

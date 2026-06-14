@@ -3,8 +3,13 @@
 #include <stdexcept>
 
 
+<<<<<<< Updated upstream
  // Функция 1: генерирует число p
 
+=======
+ // Функция 1: Просто генерирует число p через твой генератор
+extern "C" {
+>>>>>>> Stashed changes
 int64_t shamirGeneratePrime() {
 
     return generateSafePrime(10000, 1000000);
@@ -97,4 +102,4 @@ std::vector<uint8_t> shamirFinalDecrypt(const std::vector<uint8_t>& blockData, i
         result.push_back(static_cast<uint8_t>(m & 0xFF));
     }
     return result;
-}
+}}

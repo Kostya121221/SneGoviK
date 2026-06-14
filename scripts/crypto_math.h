@@ -2,7 +2,7 @@
 #include <random>
 #include <vector>
 #include <cstdint> 
-
+extern "C" {
 // Проверка числа на простоту
 bool isPrime(int64_t n);
 
@@ -21,3 +21,4 @@ bool isPrimeMillerRabin(int64_t n, int k = 20);
 //Генерация простых чисел
 int64_t generateSafePrime(int64_t min_val, int64_t max_val);
 
+}

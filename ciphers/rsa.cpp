@@ -2,7 +2,7 @@
 #include "rsa.h"
 #include "../scripts/crypto_math.h"
 #include <stdexcept>
-
+extern "C" {
 RSAKeys rsaGenerateKeys(RsaKeyGenOptions mode, int64_t custom_p, int64_t custom_q) {
     int64_t p = 0, q = 0;
 
@@ -92,4 +92,4 @@ std::vector<uint8_t> rsaDecrypt(const std::vector<uint8_t>& ciphertext, int64_t 
         plaintext.push_back(static_cast<uint8_t>(m & 0xFF));
     }
     return plaintext;
-}
+}}
