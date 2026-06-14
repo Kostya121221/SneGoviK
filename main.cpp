@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <dlfcn.h>
-#ifdef _WIN32
+#ifdef _WIN32git
     #include <windows.h>
 #endif
 
@@ -109,7 +109,7 @@ int main() {
     shamirStartEncrypt_t shamirStartEncrypt = nullptr;
     shamirProcessBlocks_t shamirProcessBlocks = nullptr;
     shamirFinalDecrypt_t shamirFinalDecrypt = nullptr;
-    void* des_handle = dlopen("des.so", RTLD_LAZY);
+    void* des_handle = dlopen("libdes.so", RTLD_LAZY);
     if (!des_handle) {
         std::cerr << "Ошибка загрузки .so: " << dlerror() << std::endl;
         return 1;
@@ -128,7 +128,7 @@ int main() {
         dlclose(des_handle);
         return 1;
     }
-    void* el_handle = dlopen("elgamal.so", RTLD_LAZY);
+    void* el_handle = dlopen("libelgamal.so", RTLD_LAZY);
     if (!el_handle) {
         std::cerr << "Ошибка загрузки библиотеки: " << dlerror() << std::endl;
         return 1;
@@ -152,7 +152,7 @@ int main() {
         dlclose(el_handle);
         return 1;
     }
-    void* rc4_handle = dlopen("rc4.so", RTLD_LAZY);
+    void* rc4_handle = dlopen("librc4.so", RTLD_LAZY);
     if (!rc4_handle) {
         std::cerr << "Ошибка загрузки .so: " << dlerror() << std::endl;
         return 1;
@@ -170,7 +170,7 @@ int main() {
         return 1;
     }
 
-    void* rc5_handle = dlopen("rc5.so", RTLD_LAZY);
+    void* rc5_handle = dlopen("librc5.so", RTLD_LAZY);
     if (!rc5_handle) {
         std::cerr << "Не удалось загрузить RC5: " << dlerror() << std::endl;
         return 1;
@@ -189,7 +189,7 @@ int main() {
         dlclose(rc5_handle);
         return 1;
     }
-    void* rsa_handle = dlopen("rsa.so", RTLD_LAZY);
+    void* rsa_handle = dlopen("librsa.so", RTLD_LAZY);
     if (!rsa_handle) {
         std::cerr << "Ошибка загрузки RSA библиотеки: " << dlerror() << std::endl;
         return 1;
@@ -208,7 +208,7 @@ int main() {
         dlclose(rsa_handle);
         return 1;
     }
-    void* shamir_handle = dlopen("shamir.so", RTLD_LAZY);
+    void* shamir_handle = dlopen("libshamir.so", RTLD_LAZY);
     if (!shamir_handle) {
         std::cerr << "Ошибка загрузки библиотеки Шамира: " << dlerror() << std::endl;
         return 1;
@@ -240,7 +240,7 @@ int main() {
         return 1;
     }
     
-    void* math_handle = dlopen("crypto_math.so", RTLD_LAZY);
+    void* math_handle = dlopen("libcrypto_math.so", RTLD_LAZY);
     if (!math_handle) {
         std::cerr << "Ошибка загрузки библиотеки математики: " << dlerror() << std::endl;
         return 1;

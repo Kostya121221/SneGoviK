@@ -464,7 +464,9 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o: /home/galkin/SneGoviK/script
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
-main_app: /lib/x86_64-linux-gnu/libc.so.6 \
+main_app: /home/galkin/SneGoviK/lib/librsa.so \
+  /home/galkin/SneGoviK/lib/libshamir.so \
+  /lib/x86_64-linux-gnu/libc.so.6 \
   /lib/x86_64-linux-gnu/libm.so.6 \
   /lib/x86_64-linux-gnu/libmvec.so.1 \
   /lib64/ld-linux-x86-64.so.2 \
@@ -506,6 +508,8 @@ main_app: /lib/x86_64-linux-gnu/libc.so.6 \
 /lib/x86_64-linux-gnu/libm.so.6:
 
 /lib/x86_64-linux-gnu/libc.so.6:
+
+/home/galkin/SneGoviK/lib/librsa.so:
 
 /usr/include/c++/13/unordered_map:
 
@@ -944,6 +948,8 @@ CMakeFiles/main_app.dir/scripts/input_output.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /usr/include/sched.h:
+
+/home/galkin/SneGoviK/lib/libshamir.so:
 
 /usr/include/stdint.h:
 
