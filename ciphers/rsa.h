@@ -17,8 +17,8 @@ struct RSAKeys {
     int64_t q; // Число q 
 };
 
-// Функция генерации ключей (по умолчанию custom_p = 0, custom_q = 0)
-RSAKeys rsaGenerateKeys(RsaKeyGenOptions mode, int64_t custom_p, int64_t custom_q);
+// Функция генерации ключей
+RSAKeys rsaGenerateKeys(RsaKeyGenOptions mode, int64_t custom_p = 0, int64_t custom_q = 0);
 
 // Функция шифрования (каждый байт -> 8 байт)
 std::vector<uint8_t> rsaEncrypt(const std::vector<uint8_t>& plaintext, int64_t e, int64_t n);
