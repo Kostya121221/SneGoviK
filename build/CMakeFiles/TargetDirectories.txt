@@ -1,0 +1,3 @@
+/home/galkin/SneGoviK/build/CMakeFiles/main_app.dir
+/home/galkin/SneGoviK/build/CMakeFiles/edit_cache.dir
+/home/galkin/SneGoviK/build/CMakeFiles/rebuild_cache.dir

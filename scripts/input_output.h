@@ -15,10 +15,7 @@ enum class PrintOptions {
     InOut,
     EncChoise,
 };
-template <typename T>
-T readNumber(const std::string& prompt = "", 
-             T min_val = std::numeric_limits<T>::lowest(), 
-             T max_val = std::numeric_limits<T>::max());
+extern "C" {
 bool loginFunc();
 std::vector<uint8_t> parseHexToBytes(const std::string& hexStr);
 //из потокового ввода в вектор
@@ -34,4 +31,4 @@ std::vector<uint8_t> readConsoleToBytes();
 //из вектора в файл
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename);
 
-void printMenu(int choi);
+void printMenu(int choi);}

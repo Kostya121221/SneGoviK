@@ -4,7 +4,7 @@
 #include <fstream>
 #include <cstdint>
 #include <iomanip>
-
+extern "C" {
 
 int64_t findPrimitiveRoot(int64_t p) {
     int64_t q = (p - 1) / 2;
@@ -96,8 +96,6 @@ std::vector<uint8_t> decryptBytesElGamal(const std::vector<CipherPair> &cipher, 
     return decryptedData;
 }
 
-#include <vector>
-#include <cstdint>
 
 // Из вектора структур в вектор байт
 std::vector<uint8_t> cipherToBytes(const std::vector<CipherPair>& cipher) {
@@ -118,4 +116,5 @@ std::vector<CipherPair> bytesToCipher(const std::vector<uint8_t>& bytes) {
     size_t totalPairs = bytes.size() / sizeof(CipherPair);
 
     return std::vector<CipherPair>(structPtr, structPtr + totalPairs);
+}
 }

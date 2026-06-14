@@ -2,7 +2,7 @@
 #include "rc4.h"
 #include <algorithm>
 #include <random>
-
+extern "C" {
 std::vector<uint8_t> generateRC4Key(size_t length) {
     std::vector<uint8_t> key(length);
     std::random_device rd;
@@ -36,4 +36,4 @@ std::vector<uint8_t> rc4Transform(const std::vector<uint8_t>& data, const std::v
         result[k] ^= gamma;
     }
     return result;
-}
+}}
