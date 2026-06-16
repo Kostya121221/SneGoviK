@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/galkin/SneGoviK/main.cpp" "CMakeFiles/main_app.dir/main.cpp.o" "gcc" "CMakeFiles/main_app.dir/main.cpp.o.d"
+  "/home/galkin/SneGoviK/scripts/crypto_math.cpp" "CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o" "gcc" "CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o.d"
   "/home/galkin/SneGoviK/scripts/input_output.cpp" "CMakeFiles/main_app.dir/scripts/input_output.cpp.o" "gcc" "CMakeFiles/main_app.dir/scripts/input_output.cpp.o.d"
   "" "main_app" "gcc" "CMakeFiles/main_app.dir/link.d"
   )

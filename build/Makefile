@@ -153,6 +153,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main_app.dir/build.make CMakeFiles/main_app.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+scripts/crypto_math.o: scripts/crypto_math.cpp.o
+.PHONY : scripts/crypto_math.o
+
+# target to build an object file
+scripts/crypto_math.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main_app.dir/build.make CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o
+.PHONY : scripts/crypto_math.cpp.o
+
+scripts/crypto_math.i: scripts/crypto_math.cpp.i
+.PHONY : scripts/crypto_math.i
+
+# target to preprocess a source file
+scripts/crypto_math.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main_app.dir/build.make CMakeFiles/main_app.dir/scripts/crypto_math.cpp.i
+.PHONY : scripts/crypto_math.cpp.i
+
+scripts/crypto_math.s: scripts/crypto_math.cpp.s
+.PHONY : scripts/crypto_math.s
+
+# target to generate assembly for a file
+scripts/crypto_math.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main_app.dir/build.make CMakeFiles/main_app.dir/scripts/crypto_math.cpp.s
+.PHONY : scripts/crypto_math.cpp.s
+
 scripts/input_output.o: scripts/input_output.cpp.o
 .PHONY : scripts/input_output.o
 
@@ -189,6 +213,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... scripts/crypto_math.o"
+	@echo "... scripts/crypto_math.i"
+	@echo "... scripts/crypto_math.s"
 	@echo "... scripts/input_output.o"
 	@echo "... scripts/input_output.i"
 	@echo "... scripts/input_output.s"

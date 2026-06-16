@@ -2,6 +2,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/main_app.dir/link.d"
   "CMakeFiles/main_app.dir/main.cpp.o"
   "CMakeFiles/main_app.dir/main.cpp.o.d"
+  "CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o"
+  "CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o.d"
   "CMakeFiles/main_app.dir/scripts/input_output.cpp.o"
   "CMakeFiles/main_app.dir/scripts/input_output.cpp.o.d"
   "main_app"

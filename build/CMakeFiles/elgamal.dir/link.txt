@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared -Wl,--dependency-file=CMakeFiles/elgamal.dir/link.d -Wl,-soname,libelgamal.so -o /home/galkin/SneGoviK/lib/libelgamal.so CMakeFiles/elgamal.dir/ciphers/elgamal.cpp.o  -Wl,-rpath,"\$ORIGIN/lib"
