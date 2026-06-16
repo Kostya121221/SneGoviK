@@ -2,14 +2,8 @@
 #include "../scripts/crypto_math.h"
 #include <stdexcept>
 
-
-<<<<<<< Updated upstream
- // Функция 1: генерирует число p
-
-=======
- // Функция 1: Просто генерирует число p через твой генератор
 extern "C" {
->>>>>>> Stashed changes
+
 int64_t shamirGeneratePrime() {
 
     return generateSafePrime(10000, 1000000);
