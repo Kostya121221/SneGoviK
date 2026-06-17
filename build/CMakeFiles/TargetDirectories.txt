@@ -1,3 +1,10 @@
+/home/galkin/SneGoviK/build/CMakeFiles/elgamal.dir
+/home/galkin/SneGoviK/build/CMakeFiles/des.dir
+/home/galkin/SneGoviK/build/CMakeFiles/rc4.dir
+/home/galkin/SneGoviK/build/CMakeFiles/rc5.dir
+/home/galkin/SneGoviK/build/CMakeFiles/rsa.dir
+/home/galkin/SneGoviK/build/CMakeFiles/shamir.dir
+/home/galkin/SneGoviK/build/CMakeFiles/crypto_math.dir
 /home/galkin/SneGoviK/build/CMakeFiles/main_app.dir
 /home/galkin/SneGoviK/build/CMakeFiles/edit_cache.dir
 /home/galkin/SneGoviK/build/CMakeFiles/rebuild_cache.dir

@@ -151,17 +151,38 @@ uint64_t hexToInt(const std::string& hex_str) {
 
 // функция создаёт абсолютно любой бинарный файл, и возвращает true если всё получилось
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename) {
-    //готовим файл для записи с именем filename 
-    std::ofstream outFile(filename, std::ios::binary);//std::ios::binary - флаг работы с бинарным файлом
-    if (!outFile) return false; //если на проглом шаге что-то не так - вернёт false
+    std::ofstream outFile(filename, std::ios::binary);
+    if (!outFile) return false;
     
-    // Тут мы просто 
+
     outFile.write(reinterpret_cast<const char*>(data.data()), data.size());
-    // метод good() Вернет true, если запись прошла без ошибок диска
     return outFile.good(); 
 
 };
 
+bool keysToBinaryFile(const std::string& text, const std::string& filename) {
+    std::ofstream file(filename); 
+    
+    if (!file.is_open()) {
+        return false; 
+    }
+
+    file << text; 
+    return true;  
+
+};
+std::string fileToKeys(const std::string& filename) {
+    std::ifstream file(filename);
+    
+    // Проверяем, успешно ли открылся файл
+    if (!file.is_open()) {
+        return "Ошибка: Не удалось открыть файл " + filename;
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf(); // Читаем весь файл в буфер потока
+    return buffer.str();    // Превращаем буфер в обычную строку
+}
 
 
 void printMenu(int choi) {

@@ -395,17 +395,21 @@ int main() {
 
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
-                        std::cout << "Ввод параметров для ElGamal:\n";
-                        int64_t p = readNumber<int64_t>("Введите простое число p: ", 3, std::numeric_limits<int64_t>::max());
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t p,g,y;
+                        ss >> p >> comma >> g >> comma >> y;
                         
                         if (!isPrime(p)) { 
                             std::cerr << "[Ошибка] Число p должно быть простым! Операция отменена.\n";
                             algoExecuted = false;
                             break;
                         }
-
-                        int64_t g = readNumber<int64_t>("Введите g (1 < g < p): ", 2, p - 1);
-                        int64_t y = readNumber<int64_t>("Введите y (1 < y < p): ", 2, p - 1);
 
                         std::vector<CipherPair> encryptedData = encryptBytesElGamal(processedData, p, g, y);
                         processedData = cipherToBytes(encryptedData);
@@ -415,8 +419,10 @@ int main() {
                     case MenuEncOptions::DES: {
                         std::string keystr;
                         while (true) {
-                            std::cout << "Введите HEX-ключ DES (строго 16 символов): ";
-                            std::cin >> keystr;
+                            std::string filename ;
+                            std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                            std::cin >> filename;
+                            keystr = fileToKeys(filename);
                             
                             if (keystr.length() == 16 && keystr.find_first_not_of("0123456789abcdefABCDEF") == std::string::npos) {
                                 break;
@@ -442,15 +448,21 @@ int main() {
 
                         std::cout << "\n--- ПРОТОКОЛ ШАМИРА (ШИФРОВАНИЕ) ---\n";
 
-                        int64_t p = readNumber<int64_t>("Введите общее простое число p (p > 255): ", 257, std::numeric_limits<int64_t>::max());
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t p,key;
+                        ss >> p >> comma >> key;
                         
                         if (!isPrime(p)) {
                             std::cerr << "[Ошибка] Число p должно быть простым!\n";
                             algoExecuted = false;
                             break;
                         }
-
-                        int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ", 2, p - 2);
                         if (modInverse(key, p - 1) == -1) {
                             std::cerr << "[Ошибка] Ключ не является взаимно простым с (p-1)! Операция отменена.\n";
                             algoExecuted = false;
@@ -487,8 +499,15 @@ int main() {
                     }
                     case MenuEncOptions::RSA: {
                         std::cout << "\n--- ШИФРОВАНИЕ RSA ---\n";
-                        int64_t n = readNumber<int64_t>("Введите общий модуль n (n > 255): ", 256, std::numeric_limits<int64_t>::max());
-                        int64_t e = readNumber<int64_t>("Введите открытую экспоненту e (e < n): ", 3, n - 1);
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t n,e;
+                        ss >> n >> comma >> e;
                         
                         if (modInverse(e, n) == -1)  { 
                             std::cout << "[Предупреждение] e и n имеют общие делители. Возможна ошибка шифрования.\n";
@@ -504,17 +523,11 @@ int main() {
                         break;
                     }
                     case MenuEncOptions::RC4: {
-                        std::cout << "\n--- ШИФРОВАНИЕ RC4 ---\n";
+                        std::string filename;
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ: ";
-                        std::cin >> keystr;
-                        if (keystr.length() % 2 != 0 || keystr.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) {
-                            std::cerr << "[Ошибка] Некорректная HEX-строка! Длина должна быть четной, символы от 0-9 и A-F.\n";
-                            algoExecuted = false;
-                            break;
-                        }
-                        // ОЧИСТКА БУФЕРА 
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                        std::cin >> filename;
+                        keystr = fileToKeys(filename);
                         
                         try {
                             std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
@@ -530,11 +543,11 @@ int main() {
                         break;
                     }
                     case MenuEncOptions::RC5: {
-                        std::cout << "\n--- ШИФРОВАНИЕ RC5 ---\n";
+                        std::string filename;
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ: ";
-                        std::cin >> keystr;
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::cout << "Введите название файла с ключами (с расширением) для шифрования: ";
+                        std::cin >> filename;
+                        keystr = fileToKeys(filename);
                         int64_t rounds = readNumber<int64_t>("Введите количество раундов (по умолчанию 12): ");
                         if (rounds < 0) rounds = 12;
 
@@ -691,8 +704,15 @@ int main() {
 
                 switch (choiseEnc) {
                     case MenuEncOptions::Elgamal: {
-                        int64_t p = readNumber<int64_t>("Введите p: ");
-                        int64_t x = readNumber<int64_t>("Введите x: ");
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t p,x;
+                        ss >> p >> comma >> x;
                         
                         if (p <= 1 || x <= 0) {
                             std::cerr << "[Ошибка] Некорректные параметры Эль-Гамаля. p должно быть > 1, x > 0.\n";
@@ -710,9 +730,11 @@ int main() {
                         break;  
                     }
                     case MenuEncOptions::DES: {
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ: ";
-                        std::cin >> keystr;
+                        keystr = fileToKeys(filename);
                         
                         try {
                             std::vector<uint8_t> keyBytes = parseHexToBytes(keystr);
@@ -741,9 +763,15 @@ int main() {
                             algoExecuted = false;
                             break;
                         }
-
-                        int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
-                        int64_t key = readNumber<int64_t>("Введите ВАШ секретный ключ шифрования: ");
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t p,key;
+                        ss >> p >> comma >> key;
                         
                         if (p <= 1 || key <= 0) {
                             std::cerr << "[Ошибка] Параметры p и ключ должны быть положительными, а p > 1.\n";
@@ -789,8 +817,15 @@ int main() {
                     }
                     case MenuEncOptions::RSA: {
                         std::cout << "\n--- ДЕШИФРОВАНИЕ RSA ---\n";
-                        int64_t d = readNumber<int64_t>("Введите секретную экспоненту d: ");
-                        int64_t n = readNumber<int64_t>("Введите общий модуль n: ");
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
+                        std::string filecontent;
+                        filecontent = fileToKeys(filename);
+                        std::stringstream ss(filecontent);
+                        char comma; 
+                        int64_t n,d;
+                        ss >> n >> comma >> d;
                         
                         if (n <= 1 || d <= 0) {
                             std::cerr << "[Ошибка] Некорректные параметры RSA. n должно быть > 1, d > 0.\n";
@@ -808,10 +843,11 @@ int main() {
                     }
                     case MenuEncOptions::RC4: {
                         std::cout << "\n--- ДЕШИФРОВАНИЕ RC4 ---\n";
+                        std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ: ";
-                        std::cin >> keystr;
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        keystr = fileToKeys(filename);
                         try {
                             std::vector<uint8_t> keyBytes = parseHexToBytes(keystr); 
                             if (keyBytes.empty()) {
@@ -826,11 +862,11 @@ int main() {
                         break;
                     }
                     case MenuEncOptions::RC5: {
-                        std::cout << "\n--- ДЕШИФРОВАНИЕ RC5 ---\n";
+                       std::string filename ;
+                        std::cout << "Введите название файла с ключами (с расширением) для расшифровки: ";
+                        std::cin >> filename;
                         std::string keystr;
-                        std::cout << "Введите HEX-ключ: ";
-                        std::cin >> keystr;
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        keystr = fileToKeys(filename);
                         uint64_t rounds = readNumber<uint64_t>("Введите количество раундов (по умолчанию 12): ");
                         if (rounds == 0) rounds = 12;
                         
@@ -923,12 +959,19 @@ int main() {
                     case MenuEncOptions::Elgamal: {
                         int64_t p, g, x, y;
                         generateElGamalKeys(p, g, x, y);
-                        std::cout << "Сгенерированные ключи:\np = " << p << " g = " << g << " x = " << x << " y = " << y << std::endl;
+                        std::string open_keys = std::to_string(p) + "," + 
+                           std::to_string(g) + "," + 
+                           std::to_string(y);
+                        std::string close_keys = std::to_string(p) + "," + 
+                           std::to_string(x);
+                        keysToBinaryFile(open_keys,"elopenkeys.txt");
+                        keysToBinaryFile(close_keys,"elclosekeys.txt");
                         break;  
                     }
                     case MenuEncOptions::DES: {
                         uint64_t newkey = generateDesKey();
-                        std::cout << "\nВаш новый ключ: " << intToHex(newkey) << "\n";
+                        std::string keys = std::to_string(newkey);
+                        keysToBinaryFile(keys,"deskeys.txt");
                         break;  
                     }
                     case MenuEncOptions::Shamir: {
@@ -949,10 +992,11 @@ int main() {
                             case ShamirKesyGenerate::AbsoluteGen: {
                                 try {
                                     int64_t p = shamirGeneratePrime();
+                                    std::cout << "Общее простое число: " << p << " Сообщите его вашему собеседнику\n";
                                     int64_t secret_key = shamirGenerateKeyForPrime(p);
-                                    std::cout << "\n=== ВАШ КЛЮЧ УСПЕШНО СГЕНЕРИРОВАН ===\n";
-                                    std::cout << "Используемый модуль p = " << p << "\n";
-                                    std::cout << "Ваш секретный ключ: " << secret_key << "\n";
+                                    std::string keys = std::to_string(p) + "," + 
+                                    std::to_string(secret_key);
+                                    keysToBinaryFile(keys,"shamirkeys.txt");
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
                                 }
@@ -962,9 +1006,9 @@ int main() {
                                 try {
                                     int64_t p = readNumber<int64_t>("Введите общее простое число p: ");
                                     int64_t secret_key = shamirGenerateKeyForPrime(p);
-                                    std::cout << "\n=== ВАШ КЛЮЧ УСПЕШНО СГЕНЕРИРОВАН ===\n";
-                                    std::cout << "Используемый модуль p = " << p << "\n";
-                                    std::cout << "Ваш секретный ключ: " << secret_key << "\n";
+                                    std::string keys = std::to_string(p) + "," + 
+                                    std::to_string(secret_key);
+                                    keysToBinaryFile(keys,"shamirkeys.txt");
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
                                 }
@@ -1011,9 +1055,12 @@ int main() {
                                 if (genChoice == RsaKeyGenOptions::Auto) {
                                     std::cout << "[Авто] Сгенерированы числа: p = " << keys.p << ", q = " << keys.q << "\n";
                                 }
-                                std::cout << "Общий модуль (n) = " << keys.n << "\n";
-                                std::cout << "ОТКРЫТЫЙ КЛЮЧ: e = " << keys.e << ", n = " << keys.n << "\n";
-                                std::cout << "ЗАКРЫТЫЙ КЛЮЧ: d = " << keys.d << ", n = " << keys.n << "\n";
+                                std::string openkeys = std::to_string(keys.n) + "," + 
+                                std::to_string(keys.e);
+                                std::string closekeys = std::to_string(keys.n) + "," + 
+                                std::to_string(keys.d);
+                                keysToBinaryFile(openkeys,"rsaOpenkeys.txt");
+                                keysToBinaryFile(closekeys,"rsaClosekeys.txt");
                             } catch (const std::exception& ex) {
                                 std::cerr << "[Ошибка generation RSA] " << ex.what() << "\n";
                             }
@@ -1026,9 +1073,8 @@ int main() {
                         if (len == 0 || len > 256) len = 16;
 
                         std::vector<uint8_t> rc4Key = generateRC4Key(len);
-                        std::cout << "\n=== ВАШ НОВЫЙ КЛЮЧ RC4 (HEX) ===\n";
-                        std::cout << dataToHex(rc4Key) << "\n";
-                        std::cout << "============================\n";
+                        std::string key = dataToHex(rc4Key);
+                        keysToBinaryFile(key,"rc4key.txt");
                         break;
                     }
                     case MenuEncOptions::RC5: {
@@ -1037,9 +1083,8 @@ int main() {
                         if (len <= 0) len = 16;
 
                         std::vector<uint8_t> rc5Key = generateRC5Key(len);
-                        std::cout << "\n=== ВАШ НОВЫЙ КЛЮЧ RC5 (HEX) ===\n";
-                        std::cout << dataToHex(rc5Key) << "\n";
-                        std::cout << "============================\n";
+                        std::string key = dataToHex(rc5Key);
+                        keysToBinaryFile(key,"rc5key.txt");
                         break;  
                     }
                     default:
