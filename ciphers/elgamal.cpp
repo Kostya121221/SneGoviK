@@ -35,9 +35,6 @@ void generateElGamalKeys(int64_t &p, int64_t &g, int64_t &x, int64_t &y) {
 
     y = powerBinary(g, x, p);
 
-    std::cout << "\n=== Ключи системы Эль-Гамаля успешно СГЕНЕРИРОВАНЫ ===\n";
-    std::cout << "Открытый ключ (p, g, y): (" << p << ", " << g << ", " << y << ")\n";
-    std::cout << "Закрытый (секретный) ключ x: " << x << "\n";
 }
 
 std::vector<CipherPair> encryptBytesElGamal(const std::vector<uint8_t> &data, int64_t p, int64_t g, int64_t y) {

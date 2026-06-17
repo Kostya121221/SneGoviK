@@ -128,6 +128,8 @@ main_app: CMakeFiles/main_app.dir/scripts/input_output.cpp.o
 main_app: CMakeFiles/main_app.dir/scripts/crypto_math.cpp.o
 main_app: CMakeFiles/main_app.dir/build.make
 main_app: CMakeFiles/main_app.dir/compiler_depend.ts
+main_app: /home/galkin/SneGoviK/lib/librsa.so
+main_app: /home/galkin/SneGoviK/lib/libshamir.so
 main_app: CMakeFiles/main_app.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/galkin/SneGoviK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable main_app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main_app.dir/link.txt --verbose=$(VERBOSE)
