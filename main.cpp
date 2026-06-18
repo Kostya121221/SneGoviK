@@ -964,14 +964,14 @@ int main() {
                            std::to_string(y);
                         std::string close_keys = std::to_string(p) + "," + 
                            std::to_string(x);
-                        keysToBinaryFile(open_keys,"elopenkeys.txt");
-                        keysToBinaryFile(close_keys,"elclosekeys.txt");
+                        keysToBinaryFile(open_keys,"elopenkeys.bin");
+                        keysToBinaryFile(close_keys,"elclosekeys.bin");
                         break;  
                     }
                     case MenuEncOptions::DES: {
                         uint64_t newkey = generateDesKey();
                         std::string keys = std::to_string(newkey);
-                        keysToBinaryFile(keys,"deskeys.txt");
+                        keysToBinaryFile(keys,"deskeys.bin");
                         break;  
                     }
                     case MenuEncOptions::Shamir: {
@@ -996,7 +996,7 @@ int main() {
                                     int64_t secret_key = shamirGenerateKeyForPrime(p);
                                     std::string keys = std::to_string(p) + "," + 
                                     std::to_string(secret_key);
-                                    keysToBinaryFile(keys,"shamirkeys.txt");
+                                    keysToBinaryFile(keys,"shamirkeys.bin");
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
                                 }
@@ -1008,7 +1008,7 @@ int main() {
                                     int64_t secret_key = shamirGenerateKeyForPrime(p);
                                     std::string keys = std::to_string(p) + "," + 
                                     std::to_string(secret_key);
-                                    keysToBinaryFile(keys,"shamirkeys.txt");
+                                    keysToBinaryFile(keys,"shamirkeys.bin");
                                 } catch (const std::exception& e) {
                                     std::cerr << "[Исключение] " << e.what() << "\n";
                                 }
@@ -1059,8 +1059,8 @@ int main() {
                                 std::to_string(keys.e);
                                 std::string closekeys = std::to_string(keys.n) + "," + 
                                 std::to_string(keys.d);
-                                keysToBinaryFile(openkeys,"rsaOpenkeys.txt");
-                                keysToBinaryFile(closekeys,"rsaClosekeys.txt");
+                                keysToBinaryFile(openkeys,"rsaOpenkeys.bin");
+                                keysToBinaryFile(closekeys,"rsaClosekeys.bin");
                             } catch (const std::exception& ex) {
                                 std::cerr << "[Ошибка generation RSA] " << ex.what() << "\n";
                             }
@@ -1074,7 +1074,7 @@ int main() {
 
                         std::vector<uint8_t> rc4Key = generateRC4Key(len);
                         std::string key = dataToHex(rc4Key);
-                        keysToBinaryFile(key,"rc4key.txt");
+                        keysToBinaryFile(key,"rc4key.bin");
                         break;
                     }
                     case MenuEncOptions::RC5: {
@@ -1084,7 +1084,7 @@ int main() {
 
                         std::vector<uint8_t> rc5Key = generateRC5Key(len);
                         std::string key = dataToHex(rc5Key);
-                        keysToBinaryFile(key,"rc5key.txt");
+                        keysToBinaryFile(key,"rc5key.bin");
                         break;  
                     }
                     default:
