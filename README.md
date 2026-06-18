@@ -17,6 +17,6 @@
 ## 🚀 Сборка исполняемого файла на Linux
 
 ```bash
-rm -f build && mkdir build && cd build && cmake .. && make && ./main_app
+rm -r build && mkdir build && cd build && cmake .. && make && ./main_app
 ```
 После этого автоматически создадуться динамические библиотеки и запуститься исполняемый файл
