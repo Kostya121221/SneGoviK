@@ -21,8 +21,8 @@ int64_t findPrimitiveRoot(int64_t p) {
     }
 }
 void generateElGamalKeys(int64_t &p, int64_t &g, int64_t &x, int64_t &y) {
-    int64_t min_val = 100000000; // Минимальная граница
-    int64_t max_val = 2000000000; // Максимальная граница
+    int64_t min_val = 100000000; 
+    int64_t max_val = 2000000000;
 
     p = generateSafePrime(min_val, max_val);
 
@@ -48,7 +48,7 @@ std::vector<CipherPair> encryptBytesElGamal(const std::vector<uint8_t> &data, in
     std::uniform_int_distribution<int64_t> distrib(2, p - 2);
 
     int64_t k = 0;
-    int64_t dummy_u = 0, dummy_v = 0; // Временные переменные для вызова функции
+    int64_t dummy_u = 0, dummy_v = 0;
 
     while (true) {
         k = distrib(gen);
@@ -94,7 +94,6 @@ std::vector<uint8_t> decryptBytesElGamal(const std::vector<CipherPair> &cipher, 
 }
 
 
-// Из вектора структур в вектор байт
 std::vector<uint8_t> cipherToBytes(const std::vector<CipherPair>& cipher) {
     if (cipher.empty()) return {};
 
@@ -105,7 +104,7 @@ std::vector<uint8_t> cipherToBytes(const std::vector<CipherPair>& cipher) {
     return std::vector<uint8_t>(bytePtr, bytePtr + totalBytes);
 }
 
-// Из вектора байт в вектор структур
+
 std::vector<CipherPair> bytesToCipher(const std::vector<uint8_t>& bytes) {
     if (bytes.empty() || (bytes.size() % sizeof(CipherPair) != 0)) return {};
 
