@@ -13,7 +13,6 @@ bool isPrime(int64_t n) {
     return true;
 }
 
-//Возведение в степень
 int64_t powerBinary(int64_t a, int64_t x, int64_t p) {
     int64_t res = 1;
     a = a % p;
@@ -29,7 +28,7 @@ int64_t powerBinary(int64_t a, int64_t x, int64_t p) {
     }
     return res;
 }
-//Алгоритм Евклида
+
 int64_t extendedGCD(int64_t a, int64_t b, int64_t &u, int64_t &v) {
     std::cout << "\n--- Расширенный алгоритм Евклида для пар (" << a << ", " << b << ") ---\n";
     
@@ -70,7 +69,6 @@ int64_t modInverse(int64_t c, int64_t m) {
 }
 
 
-//тест Миллера-Рябина
 bool isPrimeMillerRabin(int64_t n, int k) {
     if (n < 2) return false;
     if (n == 2 || n == 3) return true;
@@ -112,13 +110,12 @@ int64_t generateSafePrime(int64_t min_val, int64_t max_val) {
     std::uniform_int_distribution<int64_t> dist(min_val, max_val);
 
     while (true) {
-        // Генерируем случайное нечетное число q
         int64_t q = dist(gen) | 1; 
         
         if (isPrimeMillerRabin(q)) {
             int64_t p = 2 * q + 1;
             if (p <= max_val && isPrimeMillerRabin(p)) {
-                return p; // p — безопасное простое число
+                return p;
             }
         }
     }
