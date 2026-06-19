@@ -22,8 +22,8 @@ T readNumber(const std::string& prompt, T min_val, T max_val) {
             std::cout << "[Ошибка] Число вышло за допустимые пределы! Повторите ввод.\n";
         } else {
             std::cout << "[Ошибка] Некорректный ввод! Ожидалось число.\n";
-            std::cin.clear(); // Сбрасываем флаг ошибки cin
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очищаем буфер
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }
@@ -41,24 +41,14 @@ T readNumber(const std::string& prompt, T min_val, T max_val) {
 
 std::vector<uint8_t> fromStreamToData(std::istream& source) {
     std::vector<uint8_t> resultBuffer;
-    // Мы не можем просто перебрать весь поток, поэтому берём порционно информацию
-    const size_t chunkSize = 4096; // Размер порции 
-    //Пока у нас есть инфа в source
+    const size_t chunkSize = 4096;
     while (source) {
         size_t oldSize = resultBuffer.size();
-        // Выделяем место под новую порцию данных
         resultBuffer.resize(oldSize + chunkSize);
-        
-        // Читаем напрямую в хвост вектора. 
-        // Так как мы обрабатываем абсолтно любую информацию,
-        // Мы должны отдавать сырые байты на обработку, 
-        // при помощи reinterpret_cast<char*> мы говорим, что это всё поросто байты
-        //(&resultBuffer[oldSize]), chunkSize) - в скобках сообщаем куда читать и сколько
         source.read(reinterpret_cast<char*>(&resultBuffer[oldSize]), chunkSize);;
         
         std::streamsize bytesRead = source.gcount();
-        
-        // Корректируем размер вектора под реально прочитанное количество, нужен когда аканчивается инфа в source
+
         resultBuffer.resize(oldSize + bytesRead);
     }
     
@@ -71,38 +61,29 @@ std::vector<uint8_t> readConsoleToBytes() {
     std::string line;
 
     while (true) {
-        // Проверка, что с потоком всё окей
         if (!std::getline(std::cin, line)) {
             break; 
         }
 
-        // Выйти если написано в консоль слово exit
         if (line == "exit") {
             break;
         }
 
-        // Записываем символы строки в вектор
         for (char c : line) {
             resultBuffer.push_back(static_cast<uint8_t>(c));
         }
 
-        // Сохраняем нажатый Enter как байт переноса строки (\n)
         resultBuffer.push_back(static_cast<uint8_t>('\n'));
     }
     
     return resultBuffer;
 }
-// функция возвращает строку с 16-ти ричными числами
-// Она нужна, чтобы сделать всё через строчный поток,
-// потому что это легче и практичнее. Так бы пришлось все числа сначала поочерёдно форматировать, потом в строку
-// А тут уже встроенные инструменты превращающие всё в поток 
+
 std::string dataToHex(const std::vector<uint8_t>& data){
     std::stringstream ss;
     for (uint8_t byte : data) {
-        //если коротко - Все числа переведи в 16-тиричные -> каждому элементу выделено 2 символа под вывод ->пустота заполняется нулями
         ss << std::hex << std::setw(2) << std::setfill('0') << (int)byte << " ";
     }
-    //Строчный поток вернётся в виде строки
     return ss.str();
 };
 std::vector<uint8_t>hexToData() {
@@ -115,14 +96,11 @@ std::vector<uint8_t>hexToData() {
     std::string byteStr;
 
     while (ss >> byteStr) {
-        // для проверки количества введённых байт
         unsigned int byteVal;
         std::stringstream ss;
         
-        // Передаем строку и сразу настраиваем на HEX-формат
         ss << std::hex << byteStr;
         
-        // Проверяем, прошла ли конвертация успешно
         if (ss >> byteVal) {
             data.push_back(static_cast<uint8_t>(byteVal));
         } else {
@@ -149,7 +127,6 @@ uint64_t hexToInt(const std::string& hex_str) {
 }
 
 
-// функция создаёт абсолютно любой бинарный файл, и возвращает true если всё получилось
 bool dataToBinaryFile(const std::vector<uint8_t>& data, const std::string& filename) {
     std::ofstream outFile(filename, std::ios::binary);
     if (!outFile) return false;
@@ -173,15 +150,14 @@ bool keysToBinaryFile(const std::string& text, const std::string& filename) {
 };
 std::string fileToKeys(const std::string& filename) {
     std::ifstream file(filename);
-    
-    // Проверяем, успешно ли открылся файл
+
     if (!file.is_open()) {
         return "Ошибка: Не удалось открыть файл " + filename;
     }
 
     std::stringstream buffer;
-    buffer << file.rdbuf(); // Читаем весь файл в буфер потока
-    return buffer.str();    // Превращаем буфер в обычную строку
+    buffer << file.rdbuf();
+    return buffer.str();  
 }
 
 
@@ -239,14 +215,12 @@ std::vector<uint8_t> parseHexToBytes(const std::string& hexString) {
     std::string cleanHex;
     cleanHex.reserve(hexString.length());
 
-    // оставляем только валидные HEX-символы
     for (char ch : hexString) {
         if (std::isxdigit(static_cast<unsigned char>(ch))) {
             cleanHex.push_back(ch);
         }
     }
 
-    // Если после чистки строка пустая или нечетная — это уже явная ошибка ввода
     if (cleanHex.empty()) {
         throw std::invalid_argument("Пустой HEX-ввод.");
     }
