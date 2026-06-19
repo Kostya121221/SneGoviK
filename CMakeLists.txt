@@ -4,12 +4,9 @@ project(ElGamalLibrary VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Настраиваем путь вывода для динамических библиотек (.so)
-# CMAKE_SOURCE_DIR — это системная переменная CMake, указывающая на корень проекта
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
-# Создаем динамическую библиотеку
 add_library(elgamal SHARED 
     ../ciphers/elgamal.cpp 
     ../scripts/crypto_math.cpp
