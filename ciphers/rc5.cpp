@@ -3,7 +3,7 @@
 #include <random>
 #include <cstring>
 
-// Константы для w=32
+
 static const uint32_t Pw = 0xB7E15163;
 static const uint32_t Qw = 0x9E3779B9;
 extern "C" {
@@ -17,7 +17,6 @@ static inline uint32_t ror(uint32_t x, uint32_t s) {
     return (x >> s) | (x << (32 - s));
 }
 
-// Развёртка ключа
 static std::vector<uint32_t> keyExpansion(const std::vector<uint8_t>& key, unsigned int rounds) {
     size_t t = 2 * (rounds + 1);
     std::vector<uint32_t> S(t);
@@ -39,7 +38,6 @@ static std::vector<uint32_t> keyExpansion(const std::vector<uint8_t>& key, unsig
     return S;
 }
 
-// Паддинг PKCS7 (встроен, как в DES)
 static void pkcs7Pad(std::vector<uint8_t>& data, size_t block_size) {
     size_t pad_len = block_size - (data.size() % block_size);
     data.insert(data.end(), pad_len, static_cast<uint8_t>(pad_len));
@@ -55,7 +53,6 @@ static bool pkcs7Unpad(std::vector<uint8_t>& data) {
     return true;
 }
 
-// Шифрование одного блока (8 байт)
 static void rc5EncryptBlock(uint32_t& A, uint32_t& B, const std::vector<uint32_t>& S, unsigned int rounds) {
     A += S[0];
     B += S[1];
@@ -65,7 +62,6 @@ static void rc5EncryptBlock(uint32_t& A, uint32_t& B, const std::vector<uint32_t
     }
 }
 
-// Дешифрование одного блока
 static void rc5DecryptBlock(uint32_t& A, uint32_t& B, const std::vector<uint32_t>& S, unsigned int rounds) {
     for (unsigned int i = rounds; i >= 1; --i) {
         B = ror(B - S[2 * i + 1], A) ^ A;
@@ -75,7 +71,6 @@ static void rc5DecryptBlock(uint32_t& A, uint32_t& B, const std::vector<uint32_t
     A -= S[0];
 }
 
-// Генерация ключа
 std::vector<uint8_t> generateRC5Key(size_t length) {
     std::vector<uint8_t> key(length);
     std::random_device rd;
@@ -86,7 +81,6 @@ std::vector<uint8_t> generateRC5Key(size_t length) {
     return key;
 }
 
-// Шифрование данных
 std::vector<uint8_t> rc5Encrypt(const std::vector<uint8_t>& data, const std::vector<uint8_t>& key, unsigned int rounds) {
     std::vector<uint8_t> padded = data;
     pkcs7Pad(padded, 8);
@@ -112,7 +106,6 @@ std::vector<uint8_t> rc5Encrypt(const std::vector<uint8_t>& data, const std::vec
     return result;
 }
 
-// Дешифрование данных
 std::vector<uint8_t> rc5Decrypt(const std::vector<uint8_t>& data, const std::vector<uint8_t>& key, unsigned int rounds) {
     if (data.size() % 8 != 0 || data.empty())
         return {};
