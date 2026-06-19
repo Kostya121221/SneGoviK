@@ -10,7 +10,6 @@ int64_t shamirGeneratePrime() {
 
 }
 
-// Функция 2: Работает с уже готовым p и подбирает под него ключ 
 int64_t shamirGenerateKeyForPrime(int64_t p) {
     if (p <= 256 || !isPrimeMillerRabin(p, 10)) {
         throw std::invalid_argument("Ошибка: Число p должно быть больше 256 и строго простым.");
@@ -22,13 +21,13 @@ int64_t shamirGenerateKeyForPrime(int64_t p) {
 
     int64_t c = 0;
     int32_t attempts = 0;
-    const int32_t maxAttempts = 10000; // Защита от бесконечного цикла, если что-то пойдет не так
+    const int32_t maxAttempts = 10000; 
 
     while (attempts < maxAttempts) {
         c = dist(gen);
         
         if (modInverse(c, p - 1) != -1) {
-            return c; // Нашли случайный 
+            return c; 
         }
         
         attempts++;
@@ -37,7 +36,7 @@ int64_t shamirGenerateKeyForPrime(int64_t p) {
     throw std::runtime_error("Ошибка: Не удалось подобрать случайный ключ для данного числа p за отведенное число попыток.");
 }
 
-// Шаг 1: Исходные байты -> 8-байтовые блоки
+
 std::vector<uint8_t> shamirStartEncrypt(const std::vector<uint8_t>& plaintext, int64_t key, int64_t p) {
     std::vector<uint8_t> result;
     result.reserve(plaintext.size() * 8);
@@ -53,7 +52,6 @@ std::vector<uint8_t> shamirStartEncrypt(const std::vector<uint8_t>& plaintext, i
     return result;
 }
 
-// Шаги 2 и 3: Промежуточная обработка блоков
 std::vector<uint8_t> shamirProcessBlocks(const std::vector<uint8_t>& blockData, int64_t key, int64_t p) {
     if (blockData.size() % 8 != 0) {
         throw std::invalid_argument("Ошибка: Размер данных не кратен 8 байтам. Файл поврежден.");
@@ -77,7 +75,6 @@ std::vector<uint8_t> shamirProcessBlocks(const std::vector<uint8_t>& blockData, 
     return result;
 }
 
-// Шаг 4: 8-байтовые блоки -> исходные байты
 std::vector<uint8_t> shamirFinalDecrypt(const std::vector<uint8_t>& blockData, int64_t key, int64_t p) {
     if (blockData.size() % 8 != 0) {
         throw std::invalid_argument("Ошибка: Размер данных не кратен 8 байтам. Файл поврежден.");
